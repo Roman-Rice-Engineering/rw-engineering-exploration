@@ -1,4 +1,6 @@
 use yew::prelude::*;
+use yew_router::prelude::*;
+use crate::Route;
 
 #[derive(Properties, PartialEq)]
 pub struct MainNavProps {
@@ -18,10 +20,8 @@ fn NavBar(authwidgetprops: &AuthWidgetProps) -> Html {
                 <NavBrand name="RW Engineering" />
                 <NavToggler />
                 <Navigator authwidgetprops={authwidgetprops.clone()}>
-                    <NavItem href="/" text="Home" active={true}/>
-                    <NavItem href="/about/" text="About" />
-                    <NavItem href="/projects/" text="Projects" />
-                    <NavItem href="/blog/" text="Blog" />
+                    <NavItem to={Route::Index} text="Home" active={true}/>
+                    <NavItem to={Route::Projects} text="Projects" />
                 </Navigator>
             </div>
         </nav>
@@ -30,21 +30,21 @@ fn NavBar(authwidgetprops: &AuthWidgetProps) -> Html {
 
 #[derive(Properties, PartialEq)]
 struct NavItemProps {
-    pub href: String,
+    pub to: Route,
     pub text: String,
     #[prop_or_default()]
     pub active: bool,
 }
 
 #[function_component]
-fn NavItem(NavItemProps { href, text, active }: &NavItemProps) -> Html {
+fn NavItem(NavItemProps { to, text, active }: &NavItemProps) -> Html {
     let mut classes = vec!["nav-link"];
     if *active == true {
         classes.push("active");
     }
     html! {
         <li class="nav-item">
-            <a class={classes!(classes)} href={ href.clone() }>{ text.clone() }</a>
+                <Link<Route> classes={classes!{classes.clone()}} to={to.clone()}>{ text.clone() }</Link<Route>>
         </li>
     }
 }
@@ -58,9 +58,9 @@ struct NavBrandProps{
 #[function_component]
 fn NavBrand(NavBrandProps { name }: &NavBrandProps) -> Html {
     html! {
-        <a class="navbar-brand" href="/">
-          {name}
-        </a>
+        <Link<Route> classes="navbar-brand" to={Route::Index}>
+            {name}
+        </Link<Route>>
     }
 }
 
@@ -119,7 +119,7 @@ fn AuthWidget(AuthWidgetProps { username }: &AuthWidgetProps) -> Html {
             <>
             <p class="m-0 p-1">{"Logged in as"}</p>
             <div class="dropdown">
-                <a class="nav-link dropdown-toggle fw-bold"
+                <a class="nav-link dropdown-toggle fw-bold me-3"
                        role="button"
                        data-bs-toggle="dropdown"
                        aria-expanded="false">{username}</a>

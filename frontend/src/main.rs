@@ -1,15 +1,31 @@
 mod navbar;
 use navbar::MainNav;
 
+mod route;
+use route::Route;
+
 use yew::prelude::*;
+use yew_router::prelude::*;
+
+fn switch(route: Route) -> Html{
+    let body = match route{
+        Route::Index => html!{"Index Page!"},
+        Route::Projects => html!{"Projects Page!"}
+    };
+    html!{
+        <>
+        <MainNav username="Cool"/>
+        {body}
+        </>
+    }
+}
 
 #[function_component]
 fn App() -> Html {
-    html! {
-        <>
-        <MainNav/>
-        {"Hello world!"}
-        </>
+    html!{
+        <BrowserRouter>
+            <Switch<Route> render={switch}/>
+        </BrowserRouter>
     }
 }
 
