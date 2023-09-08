@@ -1,14 +1,13 @@
 mod navbar;
-use navbar::NavBar;
+use navbar::MainNav;
 
 use yew::prelude::*;
 
 #[function_component]
-fn App() -> Html{
-
-    html!{
+fn App() -> Html {
+    html! {
         <>
-        <NavBar/>
+        <MainNav/>
         {"Hello world!"}
         </>
     }
