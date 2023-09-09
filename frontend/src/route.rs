@@ -5,6 +5,12 @@ pub enum Route {
     #[at("/")]
     Index,
 
+    #[at("/auth")]
+    Auth,
+
     #[at("/projects")]
     Projects,
+
+    #[at("/404")]
+    NotFound,
 }

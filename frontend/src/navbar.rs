@@ -22,6 +22,8 @@ fn NavBar(authwidgetprops: &AuthWidgetProps) -> Html {
                 <Navigator authwidgetprops={authwidgetprops.clone()}>
                     <NavItem to={Route::Index} text="Home" active={true}/>
                     <NavItem to={Route::Projects} text="Projects" />
+                    <NavItem to={Route::Auth} text="Auth" />
+                    <NavItem to={Route::NotFound} text="ERROR404" />
                 </Navigator>
             </div>
         </nav>

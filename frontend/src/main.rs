@@ -10,7 +10,9 @@ use yew_router::prelude::*;
 fn switch(route: Route) -> Html{
     let body = match route{
         Route::Index => html!{"Index Page!"},
-        Route::Projects => html!{"Projects Page!"}
+        Route::Projects => html!{"Projects Page!"},
+        Route::Auth => html!{"Auth Page!"},
+        Route::NotFound => html!{"Error 404"}
     };
     html!{
         <>
