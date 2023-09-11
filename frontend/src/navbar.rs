@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
-use crate::Route;
+use crate::{Route, route::AuthRoute};
 
 #[derive(Properties, PartialEq)]
 pub struct MainNavProps {
@@ -132,11 +132,11 @@ fn AuthWidget(AuthWidgetProps { username }: &AuthWidgetProps) -> Html {
                         </span>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="">{"Profile"}</a>
+                        <Link<AuthRoute> classes={classes!{"dropdown-item"}} to={AuthRoute::Profile}>{"Profile"}</Link<AuthRoute>>
                     </li>
                     <li class="dropdown-divider"></li>
                     <li>
-                        <a class="dropdown-item" href="/accounts/logout/">{"Log Out"}</a>
+                        <Link<AuthRoute> classes={classes!{"dropdown-item"}} to={AuthRoute::Logout}>{"Log Out"}</Link<AuthRoute>>
                     </li>
                 </ul>
             </div>
