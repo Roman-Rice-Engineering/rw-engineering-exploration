@@ -1,6 +1,9 @@
 mod navbar;
 use navbar::MainNav;
 
+mod api;
+mod auth;
+
 mod route;
 use route::{Route, AuthRoute};
 
