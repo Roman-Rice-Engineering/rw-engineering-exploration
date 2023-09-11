@@ -28,6 +28,9 @@ pub enum AuthRoute{
 
     #[at("/auth/profile")]
     Profile,
+
+    #[at("/auth/signup")]
+    Signup,
     
     #[not_found]
     #[at("/auth/404")]

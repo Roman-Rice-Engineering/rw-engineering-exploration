@@ -12,6 +12,7 @@ fn switch_auth(route: AuthRoute) -> Html {
         AuthRoute::Login => html!{"Login Page!"},
         AuthRoute::Logout => html!{"Logout Page!"},
         AuthRoute::Profile => html!{"Your Profile!"},
+        AuthRoute::Signup => html!{"Sign up page!"},
         AuthRoute::NotFound => html!{<Redirect<Route> to={Route::NotFound}/>}
     }
 }
@@ -25,7 +26,7 @@ fn switch(route: Route) -> Html{
     };
     html!{
         <>
-        <MainNav username="Cool"/>
+        <MainNav />
         {body}
         </>
     }
