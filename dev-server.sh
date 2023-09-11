@@ -18,9 +18,10 @@ docker network ls | grep  " $NETWORK_NAME " > /dev/null \
 # Start mongodb test database container -- accessible at 'localhost:27017'
 docker run --name $DB_CONTAINER_NAME -d --rm -p 27017:27017 --network $NETWORK_NAME mongo:7.0.1
 
-DB_URI="mongodb://localhost:27017/?directConnection=true&appName=mongosh+1.10.6"
+DB_URI="mongodb://localhost:27017"
 
-docker run -it --network test --rm mongo mongosh --host mongo-test test
+#docker run -it --network test --rm mongo mongosh --host mongo-test test
+cd "$(dirname $(realpath $0))/frontend" && trunk serve
 
 # Cleanup in case we reach the end of file
 cleanup
