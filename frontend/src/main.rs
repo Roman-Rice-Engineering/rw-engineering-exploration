@@ -1,8 +1,8 @@
 mod navbar;
 use navbar::MainNav;
 
-mod api;
 mod auth;
+use auth::logout::Logout;
 
 mod route;
 use route::{Route, AuthRoute};
@@ -13,7 +13,7 @@ use yew_router::prelude::*;
 fn switch_auth(route: AuthRoute) -> Html {
     match route{
         AuthRoute::Login => html!{"Login Page!"},
-        AuthRoute::Logout => html!{"Logout Page!"},
+        AuthRoute::Logout => html!{<Logout />},
         AuthRoute::Profile => html!{"Your Profile!"},
         AuthRoute::Signup => html!{"Sign up page!"},
         AuthRoute::NotFound => html!{<Redirect<Route> to={Route::NotFound}/>}

@@ -2,6 +2,8 @@
 
 NETWORK_NAME="test"
 DB_CONTAINER_NAME="mongo-test"
+DEV_SERVER_CONTAINER_NAME="rw-engineering-dev-server"
+DEV_SERVER_IMAGE_NAME="rw-engineering-dev"
 SCRIPT_DIR="$(dirname $(realpath $0))"
 
 # Set up cleanup
@@ -19,15 +21,11 @@ docker network ls | grep  " $NETWORK_NAME " > /dev/null \
 
 # Start mongodb test database container -- accessible at 'localhost:27017'
 docker run --name $DB_CONTAINER_NAME -d --rm -p 27017:27017 --network $NETWORK_NAME mongo:7.0.1
-export DB_URI="mongodb://localhost:27017"
+DB_URI="mongodb://localhost:27017"
 
-# Start backend server
-BACKEND_PATH="$SCRIPT_DIR/target/debug/backend"
-cd "$SCRIPT_DIR/backend" && cargo build && $BACKEND_PATH & 
-export BACKEND_URL="http://localhost:8000"
-
-#docker run -it --network test --rm mongo mongosh --host mongo-test test
-cd "$SCRIPT_DIR/frontend" && trunk serve
+# Package dev server 
+docker build --target dev $SCRIPT_DIR -t $DEV_SERVER_IMAGE_NAME
+docker run -v $SCRIPT_DIR:/rw-engineering -e "DB_URI=$DB_URI" --network $NETWORK_NAME -p 7000:80 -it --rm --name $DEV_SERVER_CONTAINER_NAME $DEV_SERVER_IMAGE_NAME
 
 # Cleanup in case we reach the end of file
 cleanup
