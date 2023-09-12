@@ -25,7 +25,7 @@ DB_URI="mongodb://localhost:27017"
 
 # Package dev server 
 docker build --target dev $SCRIPT_DIR -t $DEV_SERVER_IMAGE_NAME
-docker run -v $SCRIPT_DIR:/rw-engineering -e "DB_URI=$DB_URI" --network $NETWORK_NAME -p 7000:80 -it --rm --name $DEV_SERVER_CONTAINER_NAME $DEV_SERVER_IMAGE_NAME
+docker run -v $SCRIPT_DIR:/rw-engineering -e "DB_URI=$DB_URI" -e "API_URL=http://api.localhost:7000" --network $NETWORK_NAME -p 7000:80 -it --rm --name $DEV_SERVER_CONTAINER_NAME $DEV_SERVER_IMAGE_NAME
 
 # Cleanup in case we reach the end of file
 cleanup

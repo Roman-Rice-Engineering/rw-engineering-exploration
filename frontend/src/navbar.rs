@@ -112,7 +112,7 @@ fn AuthWidget(AuthWidgetProps { username }: &AuthWidgetProps) -> Html {
         None => html!{ 
             <>
                 <div class="nav-item d-xl-inline-flex">
-                    <p class="m-0 pe-2">{"Dont have an account? "}
+                    <p class="m-0 pe-2">{"Do not have an account? "}
                         <Link<AuthRoute> to={AuthRoute::Signup}>{"Sign up"}</Link<AuthRoute>>
                     </p>
                 </div>
