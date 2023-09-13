@@ -1,7 +1,7 @@
 use rocket::{get, routes};
 use rocket::http::{CookieJar, Cookie};
 
-#[get("/")]
+#[get("/hello")]
 fn index(cookies: &CookieJar<'_>) -> String{
     
     let mut read_cookie: String = match cookies.get("helloworld").map(|c| format!("{}", c.value())){
@@ -10,7 +10,8 @@ fn index(cookies: &CookieJar<'_>) -> String{
     };
     read_cookie.push('a');
     let mut to_ret = "Hello world: ".to_owned();
-    cookies.add(Cookie::new("helloworld", read_cookie.clone()));
+    let new_cookie = Cookie::new("helloworld", read_cookie.clone());
+    cookies.add(new_cookie);
     to_ret.push_str(&read_cookie);
     to_ret
 }

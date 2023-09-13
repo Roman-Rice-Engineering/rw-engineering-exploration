@@ -29,7 +29,7 @@ docker run \
 	-v $SCRIPT_DIR/frontend/src:/rw-engineering/frontend/src \
 	-v $SCRIPT_DIR/common/src:/rw-engineering/common/src \
 	-v $SCRIPT_DIR/backend/src:/rw-engineering/backend/src \
-	-e "DB_URI=$DB_URI" -e "API_URL=http://api.localhost:7000" --network $NETWORK_NAME -p 7000:80 -it --rm --name $DEV_SERVER_CONTAINER_NAME $DEV_SERVER_IMAGE_NAME
+	-e "DB_URI=$DB_URI" -e "API_URL=http://localhost:7000/api/" --network $NETWORK_NAME -p 7000:80 -it --rm --name $DEV_SERVER_CONTAINER_NAME $DEV_SERVER_IMAGE_NAME
 
 # Cleanup in case we reach the end of file
 cleanup
