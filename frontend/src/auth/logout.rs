@@ -12,7 +12,7 @@ pub fn Logout() -> Html{
         use_effect_with_deps(move |_| {
             let data = data.clone();
             spawn_local(async move {
-                let fetched_data: String = Request::get("http://api.localhost:7000")
+                let fetched_data: String = Request::get("http://localhost:7000/api/")
                     .send()
                     .await
                     .unwrap()
