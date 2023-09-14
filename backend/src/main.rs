@@ -1,4 +1,4 @@
-use rocket::{get, routes};
+use rocket::{get, routes, post};
 use rocket::http::{CookieJar, Cookie};
 
 #[get("/hello")]
@@ -16,8 +16,14 @@ fn index(cookies: &CookieJar<'_>) -> String{
     to_ret
 }
 
+#[post("/auth", data = "<data>")]
+fn auth_post(data: String) -> String{
+    println!("{}", data);
+    String::new()
+}
+
 #[rocket::launch]
 async fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index])
+        .mount("/", routes![index, auth_post])
 }
