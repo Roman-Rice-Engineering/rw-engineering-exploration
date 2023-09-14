@@ -18,4 +18,8 @@ impl UserTransmission{
     }
 }
 
+pub trait TransmitUser{
+    fn as_user_transmission() -> UserTransmission;
+}
+
 

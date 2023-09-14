@@ -1,6 +1,7 @@
 use rocket::{get, routes, post};
 use rocket::http::{CookieJar, Cookie};
 use common::models::UserTransmission;
+use common::models::DisplayState;
 
 #[get("/hello")]
 fn index(cookies: &CookieJar<'_>) -> String{
@@ -21,7 +22,8 @@ fn index(cookies: &CookieJar<'_>) -> String{
 fn auth_post(data: String) -> String{
     let data: UserTransmission = serde_json::from_str(&data).unwrap();
     println!("{:#?}", data);
-    String::new()
+    //serde_json::to_string(&DisplayState::Success { message: "Successfully created user.".to_owned() }).unwrap()
+    "Hello world!".to_owned()
 }
 
 #[rocket::launch]
