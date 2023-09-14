@@ -1,5 +1,6 @@
 use rocket::{get, routes, post};
 use rocket::http::{CookieJar, Cookie};
+use common::models::UserTransmission;
 
 #[get("/hello")]
 fn index(cookies: &CookieJar<'_>) -> String{
@@ -18,7 +19,8 @@ fn index(cookies: &CookieJar<'_>) -> String{
 
 #[post("/auth", data = "<data>")]
 fn auth_post(data: String) -> String{
-    println!("{}", data);
+    let data: UserTransmission = serde_json::from_str(&data).unwrap();
+    println!("{:#?}", data);
     String::new()
 }
 
