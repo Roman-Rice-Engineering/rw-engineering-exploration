@@ -21,7 +21,7 @@ docker network ls | grep  " $NETWORK_NAME " > /dev/null \
 
 # Start mongodb test database container -- accessible at 'localhost:27017'
 docker run --name $DB_CONTAINER_NAME -d --rm -p 27017:27017 --network $NETWORK_NAME mongo:7.0.1
-DB_URI="mongodb://localhost:27017"
+DB_URI="mongodb://mongo-test:27017/test?directConnection=true"
 
 # Package dev server 
 docker build --target dev $SCRIPT_DIR -t $DEV_SERVER_IMAGE_NAME

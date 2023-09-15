@@ -1,7 +1,9 @@
-use rocket::{get, routes, post};
+use rocket::{get, routes};
 use rocket::http::{CookieJar, Cookie};
-use common::models::UserTransmission;
-use common::models::DisplayState;
+mod auth;
+use crate::auth::auth_post;
+use mongodb::Client;
+
 
 #[get("/hello")]
 fn index(cookies: &CookieJar<'_>) -> String{
@@ -18,16 +20,14 @@ fn index(cookies: &CookieJar<'_>) -> String{
     to_ret
 }
 
-#[post("/auth", data = "<data>")]
-fn auth_post(data: String) -> String{
-    let data: UserTransmission = serde_json::from_str(&data).unwrap();
-    println!("{:#?}", data);
-    //serde_json::to_string(&DisplayState::Success { message: "Successfully created user.".to_owned() }).unwrap()
-    "Hello world!".to_owned()
-}
 
 #[rocket::launch]
 async fn rocket() -> _ {
+    
+    let db_uri = std::env::var("DB_URI").expect("unable to find 'DB_URI' env variable");
+    let db_client = Client::with_uri_str(db_uri).await.expect("unable to connect to database");
+
     rocket::build()
+        .manage(db_client)
         .mount("/", routes![index, auth_post])
 }
