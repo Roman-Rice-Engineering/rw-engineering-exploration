@@ -91,6 +91,9 @@ pub fn Signup() -> Html {
 
         password1_state_cloned.set(String::new());
         password2_state_cloned.set(String::new());
+        email_state_cloned.set(String::new());
+        username_state_cloned.set(String::new());
+
         match form_good {
             DisplayState::Hidden => (),
 
