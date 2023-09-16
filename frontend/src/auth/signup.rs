@@ -1,13 +1,13 @@
 use std::ops::Deref;
 
+use crate::auth::auth_form::{AuthForm, FormTextInput, FormSubmitButton};
 use crate::env::API_URL;
 use crate::route::AuthRoute;
 use common::auth::{User, Password, Email};
 use common::models::DisplayState;
 use gloo_net::http::Request;
-use wasm_bindgen::JsCast;
-use web_sys::{HtmlInputElement, SubmitEvent};
-use yew::{classes, function_component, html, use_state, Callback, Event, Html, Properties};
+use web_sys::SubmitEvent;
+use yew::{classes, function_component, html, use_state, Callback, Html};
 use yew_router::prelude::*;
 
 #[function_component]
@@ -130,79 +130,15 @@ pub fn Signup() -> Html {
     });
 
     html! {
-        <section style="height: 90vh;" class="bg-caution">
-            <div class="container h-100">
-              <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-                  <div class="card" style="border-radius: 25px;">
-                    <div class="card-body p-5">
-                      {alert_html}
-                      <h2 class="text-center mb-5">{"Create an account"}</h2>
-                      <form {onsubmit}>
-                        {&*username_state}
-                        <FormTextInput name="button1" placeholder="Username" onchange={username_changed} value={username_state.deref().clone()}/>
-                        {&*email_state}
-                        <FormTextInput name="button2" placeholder="email@example.com" input_type="email" onchange={email_changed} value={email_state.deref().clone()} />
-                        {&*password1_state}
-                        <FormTextInput name="password1" placeholder="Password" input_type="password" onchange={password1_changed} value={password1_state.deref().clone()} />
-                        {&*password2_state}
-                        <FormTextInput name="password2" placeholder="Confirm Password" input_type="password" onchange={password2_changed} value={password2_state.deref().clone()} />
-                        <FormSubmitButton />
-                        <p class="text-center text-muted mt-4">{"Already have an account? "}<Link<AuthRoute> classes={classes!{"fw-bold"}} to={AuthRoute::Login}>{"Log in"}</Link<AuthRoute>></p>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-        </section>
-    }
-}
-
-#[derive(Properties, PartialEq, Clone)]
-struct FormTextInputProps {
-    #[prop_or_default]
-    pub placeholder: String,
-    #[prop_or("text".to_owned())]
-    pub input_type: String,
-    pub name: String,
-    pub onchange: Callback<String>,
-    pub value: String,
-}
-
-#[function_component]
-fn FormTextInput(
-    FormTextInputProps {
-        value,
-        placeholder,
-        name,
-        input_type,
-        onchange,
-    }: &FormTextInputProps,
-) -> Html {
-    let onchange = onchange.clone();
-    let onchange = Callback::from(move |event: Event| {
-        let value = event
-            .target()
-            .unwrap()
-            .unchecked_into::<HtmlInputElement>()
-            .value();
-        onchange.emit(value);
-    });
-    html! {
-        <div class="form-outline mb-4">
-            <input value={value.clone()} {onchange} type={input_type.clone()} placeholder={placeholder.clone()} name={name.clone()} class="form-control form-control-lg" />
-        </div>
-
-    }
-}
-
-#[function_component]
-fn FormSubmitButton() -> Html {
-    html! {
-            <div class="d-flex justify-content-center">
-                <button type="submit" class="text-body btn btn-success btn-lg">{"Submit form"}</button>
-            </div>
-
+        <AuthForm alert={alert_html}>
+            <form {onsubmit}>
+                <FormTextInput name="button1" placeholder="Username" onchange={username_changed} value={username_state.deref().clone()}/>
+                <FormTextInput name="button2" placeholder="email@example.com" input_type="email" onchange={email_changed} value={email_state.deref().clone()} />
+                <FormTextInput name="password1" placeholder="Password" input_type="password" onchange={password1_changed} value={password1_state.deref().clone()} />
+                <FormTextInput name="password2" placeholder="Confirm Password" input_type="password" onchange={password2_changed} value={password2_state.deref().clone()} />
+                <FormSubmitButton />
+                <p class="text-center text-muted mt-4">{"Already have an account? "}<Link<AuthRoute> classes={classes!{"fw-bold"}} to={AuthRoute::Login}>{"Log in"}</Link<AuthRoute>></p>
+            </form>
+        </AuthForm>
     }
 }
