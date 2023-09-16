@@ -22,7 +22,10 @@ pub async fn auth_post(data: String, client: &State<mongodb::Client>) -> String{
     }
     let db = client.database("auth");
     let col: mongodb::Collection<User> = db.collection("users");
-    let _ = col.insert_one(user, None).await;
+    match col.insert_one(user, None).await{
+        Ok(c) => println!("{}", c.inserted_id.to_string()),
+        Err(e) => {println!("Error: {}", e); return failure_message;}
+    }
 
     // Success response
     serde_json::to_string(&DisplayState::Success { message: "successfully created user".to_owned() }).unwrap()
