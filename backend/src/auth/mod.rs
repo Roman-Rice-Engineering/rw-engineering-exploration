@@ -3,7 +3,7 @@ use rocket::State;
 use rocket::post;
 use common::{auth::user::User, models::DisplayState};
 
-#[post("/auth", data = "<data>")]
+#[post("/auth/signup", data = "<data>")]
 pub async fn auth_post(data: String, client: &State<mongodb::Client>) -> String{
 
     let failure_message = serde_json::to_string(&DisplayState::Failure { message: "failed to create user".to_string() }).unwrap().to_string();
