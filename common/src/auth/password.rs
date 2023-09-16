@@ -87,10 +87,10 @@ fn plaintext_password_is_valid(password: String) -> Result<(), &'static str>{
     }
 
     // Check length of password
-    if password.len() < PASSWORD_LENGTH_MIN {
+    if password.len() <= PASSWORD_LENGTH_MIN {
         return Err("password is too short");
     }
-    if password.len() > PASSWORD_LENGTH_MAX {
+    if password.len() >= PASSWORD_LENGTH_MAX {
         return Err("password is too long");
     }
 
