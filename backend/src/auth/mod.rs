@@ -1,10 +1,15 @@
+pub mod user_collection;
+use std::ops::Deref;
+
 use rocket::State;
 
 use rocket::post;
 use common::{auth::user::User, models::DisplayState};
 
-#[post("/auth/signup", data = "<data>")]
-pub async fn auth_post(data: String, client: &State<mongodb::Client>) -> String{
+use self::user_collection::UserCollection;
+
+#[post("/signup", data = "<data>")]
+pub async fn auth_signup_post(data: String, users: &State<UserCollection>) -> String{
 
     let failure_message = serde_json::to_string(&DisplayState::Failure { message: "failed to create user".to_string() }).unwrap().to_string();
 
@@ -20,9 +25,7 @@ pub async fn auth_post(data: String, client: &State<mongodb::Client>) -> String{
         Ok(()) => (),
         Err(e) => {println!("Error: {}", e); return failure_message;}
     }
-    let db = client.database("auth");
-    let col: mongodb::Collection<User> = db.collection("users");
-    match col.insert_one(user, None).await{
+    match users.deref().add_user(&user).await{
         Ok(c) => println!("{}", c.inserted_id.to_string()),
         Err(e) => {println!("Error: {}", e); return failure_message;}
     }
