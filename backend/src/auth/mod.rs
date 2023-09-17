@@ -1,5 +1,6 @@
 pub mod user_collection;
 pub mod sessions;
+pub mod auth_guard;
 use std::ops::Deref;
 
 use rocket::State;
@@ -32,8 +33,6 @@ pub async fn auth_signup_post(data: String, users: &State<UserCollection>, sessi
         Ok(c) => {println!("{}", c.inserted_id.to_string()); c.inserted_id.as_object_id().unwrap()},
         Err(e) => {println!("Error: {}", e); return failure_message;}
     };
-    user.set_id(user_oid);
-    
     let session = Session::new(user);
     let _ = session.push_session_to_cookies(cookies);
     let result = sessions.add_session(session).await;

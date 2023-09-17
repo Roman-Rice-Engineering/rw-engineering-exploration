@@ -67,7 +67,7 @@ pub struct ManySessions{
 }
 
 impl ManySessions{
-    /*pub async fn get_session_from_cookies_and_csrf_token(self: &Self, cookies: &CookieJar<'_>, csrf_token: Uuid) -> Result<Option<&Session>, serde_json::Error>{
+    pub async fn get_session_from_cookies_and_csrf_token(self: &Self, cookies: &CookieJar<'_>, csrf_token: Uuid) -> Result<Option<Session>, serde_json::Error>{
         let cookie_sid = match cookies.get_private("SID"){
             Some(c) => c,
             None => return Ok(None)
@@ -94,7 +94,7 @@ impl ManySessions{
         }
 
         Ok(Some(session))
-    }*/
+    }
 
     pub async fn add_session(self: &Self, session: Session) -> Result<mongodb::results::InsertOneResult, mongodb::error::Error>{
         self.sessions.insert_one(session, None).await
@@ -121,15 +121,16 @@ impl ManySessions{
 
     pub async fn delete_session(self: &mut Self, session: &Session){
         self.sessions.retain(|e| e != session);
-    }
-
-    pub async fn get_session_by_session_id(self: &Self, session_id: Uuid) -> Option<&Session>{
-
-        for ele in &self.sessions{
-            if ele.session_id == session_id{
-                return Some(&ele);
-            }
-        }
-        None
     }*/
+
+    pub async fn get_session_by_session_id(self: &Self, session_id: Uuid) -> Option<Session>{
+        let session_id_serialized = match bson::to_bson(&session_id){
+            Ok(c) => c,
+            Err(_) => return None
+        };
+        match self.sessions.find_one(mongodb::bson::doc!{"session_id": session_id_serialized}, None).await{
+            Err(_) => None,
+            Ok(c) => c
+        }
+    }
 }
