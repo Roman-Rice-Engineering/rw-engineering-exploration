@@ -1,6 +1,6 @@
 mod navbar;
 use navbar::MainNav;
-mod lib;
+mod util;
 
 mod auth;
 

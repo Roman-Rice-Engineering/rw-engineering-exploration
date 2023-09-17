@@ -1,8 +1,8 @@
 use std::ops::Deref;
 
 use crate::auth::auth_form::{AuthForm, FormTextInput, FormSubmitButton};
-use crate::lib::api_request;
-use crate::lib::auth_reload::auth_reload_login;
+use crate::util::api_request;
+use crate::util::auth_reload::auth_reload_login;
 use crate::route::AuthRoute;
 use common::auth::{User, Password, Email};
 use common::models::DisplayState;

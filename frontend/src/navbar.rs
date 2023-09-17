@@ -3,7 +3,7 @@ use std::ops::Deref;
 use common::auth::User;
 use yew::prelude::*;
 use yew_router::prelude::*;
-use crate::{Route, route::AuthRoute, lib::api_request::api_request};
+use crate::{Route, route::AuthRoute, util::api_request::api_request};
 
 #[function_component]
 pub fn MainNav() -> Html{
