@@ -24,11 +24,15 @@ impl Session{
             expiration: chrono::Utc::now() + chrono::Duration::days(1),
         }
     }
-
+/*
     pub fn get_user(self: &Self) -> &User {
         &self.user
     }
 
+    pub fn get_session_id(self: &Self) -> &Uuid{
+        &self.session_id
+    }
+*/
     pub fn push_session_to_cookies(self: &Self, cookies: &CookieJar<'_>) -> Result<(), serde_json::Error>{
         let cookie_sid = Cookie::build("SID", match serde_json::to_string(&self.session_id){
             Ok(c) => c,
@@ -50,10 +54,6 @@ impl Session{
             .finish();
         cookies.add(cookie_csrf);
         Ok(())
-    }
-
-    pub fn get_session_id(self: &Self) -> &Uuid{
-        &self.session_id
     }
 
     pub fn verify_by_csfr_token(self: &Self, token: Uuid) -> bool{
@@ -117,11 +117,16 @@ impl ManySessions{
 
     pub async fn delete_sessions_by_session_id(self: &mut Self, session_id: Uuid){
         self.sessions.retain(|e| session_id != e.session_id);
-    }
-
-    pub async fn delete_session(self: &mut Self, session: &Session){
-        self.sessions.retain(|e| e != session);
     }*/
+
+    pub async fn delete_session(self: &Self, cookies: &CookieJar<'_>, session: &Session){
+        let _ = self.sessions.delete_one(bson::doc!{
+            "session_id": bson::to_bson(&session.session_id).unwrap(),
+            "csrf_token": bson::to_bson(&session.csrf_token).unwrap()
+        }, None).await;
+        cookies.remove(Cookie::new("SID", ""));
+        cookies.remove(Cookie::new("CSRF_TOKEN", ""));
+    }
 
     pub async fn get_session_by_session_id(self: &Self, session_id: Uuid) -> Option<Session>{
         let session_id_serialized = match bson::to_bson(&session_id){

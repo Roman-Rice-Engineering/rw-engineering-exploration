@@ -13,7 +13,7 @@ use self::sessions::{ManySessions, Session};
 use self::user_collection::UserCollection;
 
 #[post("/signup", rank = 1)]
-pub fn redirect(session: Session) -> String{
+pub fn redirect(_session: Session) -> String{
     serde_json::to_string(&DisplayState::Failure { message: "you must log out first".to_owned() }).unwrap()
 }
 
@@ -50,9 +50,8 @@ pub async fn auth_signup_post(data: String, users: &State<UserCollection>, sessi
     serde_json::to_string(&DisplayState::Success { message: "successfully created user".to_owned() }).unwrap()
 }
 
-/*
+
 #[post("/logout")]
-pub async fn auth_logout_post(sessions: &State<ManySessions>, session: Session){
-    sessions.deref().
-    
-}*/
+pub async fn auth_logout_post(cookies: &CookieJar<'_>, sessions: &State<ManySessions>, session: Session){
+    sessions.deref().delete_session(cookies, &session).await;
+}

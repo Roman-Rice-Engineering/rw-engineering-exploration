@@ -12,14 +12,14 @@ pub fn Logout() -> Html{
         use_effect_with_deps(move |_| {
             let data = data.clone();
             spawn_local(async move {
-                let fetched_data: String = Request::get(&(API_URL.to_owned() + "hello/"))
+                let fetched_data: String = Request::post(&(API_URL.to_owned() + "auth/logout/"))
+                    .header("X-CSRF-Token", &wasm_cookies::get("CSRF_TOKEN").unwrap().unwrap())
                     .send()
                     .await
                     .unwrap()
                     .text()
                     .await
                     .unwrap();
-                data.set(fetched_data);
             });
         }, ());
 
@@ -28,7 +28,7 @@ pub fn Logout() -> Html{
 
     html!{
         <p>
-            {data.to_string()}
+            {"You are now logged out!"}
         </p>
         
     }

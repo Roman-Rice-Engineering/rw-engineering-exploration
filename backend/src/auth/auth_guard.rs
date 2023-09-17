@@ -8,8 +8,8 @@ use super::sessions::ManySessions;
 
 #[derive(Debug)]
 pub enum SessionAuthError{
-    NotAuthenticated,
-    DatabaseAccessError,
+    //NotAuthenticated,
+    //DatabaseAccessError,
     NoSessionsFound
 }
 
@@ -30,7 +30,7 @@ impl<'r> FromRequest<'r> for Session{
                 Some(c) => c,
                 None => return request::Outcome::Forward(())
             }),
-            Err(e) => request::Outcome::Forward(())
+            Err(_) => request::Outcome::Forward(())
         }
 
     }

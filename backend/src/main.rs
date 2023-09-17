@@ -26,7 +26,7 @@ async fn rocket() -> _ {
     rocket::build()
         .manage(users)
         .manage(sessions)
-        .mount("/auth", routes![index, auth::redirect, auth_signup_post])
+        .mount("/auth", routes![index, auth::auth_logout_post,auth::redirect, auth_signup_post])
 }
 
 async fn create_users_collection(db_client: &Client) -> Result<UserCollection, mongodb::error::Error>{
