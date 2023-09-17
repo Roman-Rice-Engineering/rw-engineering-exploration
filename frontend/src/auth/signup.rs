@@ -2,6 +2,7 @@ use std::ops::Deref;
 
 use crate::auth::auth_form::{AuthForm, FormTextInput, FormSubmitButton};
 use crate::env::API_URL;
+use crate::lib::api_request;
 use crate::route::AuthRoute;
 use common::auth::{User, Password, Email};
 use common::models::DisplayState;
@@ -122,22 +123,11 @@ pub fn Signup() -> Html {
          }
         let user_data = serde_json::to_string_pretty(&user_data).unwrap();
         wasm_bindgen_futures::spawn_local(async move {
-            let post_submission: String = Request::post(&(API_URL.to_owned() + "auth/signup/"))
-                .header("X-CSRF-Token", match wasm_cookies::get("CSRF_TOKEN"){
-                    Some(c) => match c {
-                        Ok(s) => s,
-                        Err(_) => "".to_owned()
-                    },
-                    None => "".to_owned()
-                }.deref())
-                .body(user_data)
-                .unwrap()
-                .send()
-                .await
-                .unwrap()
-                .text()
-                .await
-                .unwrap();
+            let post_submission = match api_request::api_request("/auth/signup/", user_data).await{
+                Ok(c) => c,
+                Err(_) => String::new()
+            };
+
             alert_state_cloned.set(match serde_json::from_str(&post_submission) {
                 Ok(c) => c,
                 Err(e) => DisplayState::Failure {
