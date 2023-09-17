@@ -123,7 +123,7 @@ pub fn Signup() -> Html {
          }
         let user_data = serde_json::to_string_pretty(&user_data).unwrap();
         wasm_bindgen_futures::spawn_local(async move {
-            let post_submission = match api_request::api_request("/auth/signup/", user_data).await{
+            let post_submission = match api_request::api_request("/auth/signup/", Some(user_data)).await{
                 Ok(c) => c,
                 Err(_) => String::new()
             };
