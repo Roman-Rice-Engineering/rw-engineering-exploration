@@ -115,6 +115,7 @@ pub fn Signup() -> Html {
         let user_data = serde_json::to_string_pretty(&user_data).unwrap();
         wasm_bindgen_futures::spawn_local(async move {
             let post_submission: String = Request::post(&(API_URL.to_owned() + "auth/signup/"))
+                .header("X-CSRF-Token", &wasm_cookies::get("CSRF_TOKEN").unwrap().unwrap())
                 .body(user_data)
                 .unwrap()
                 .send()

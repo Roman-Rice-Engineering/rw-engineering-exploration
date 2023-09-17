@@ -38,7 +38,7 @@ impl Session{
             .same_site(rocket::http::SameSite::Strict)
             .secure(IS_PRODUCTION)
             .finish();
-        cookies.add_private(cookie_sid);
+        cookies.add(cookie_sid);
 
         let cookie_csrf = Cookie::build("CSRF_TOKEN", match serde_json::to_string(&self.csrf_token){
             Ok(c) => c,
@@ -63,12 +63,12 @@ impl Session{
 
 #[derive(Debug)]
 pub struct ManySessions{
-    sessions: Collection<Session>
+    sessions: Collection<bson::Bson>
 }
 
 impl ManySessions{
     pub async fn get_session_from_cookies_and_csrf_token(self: &Self, cookies: &CookieJar<'_>, csrf_token: Uuid) -> Result<Option<Session>, serde_json::Error>{
-        let cookie_sid = match cookies.get_private("SID"){
+        let cookie_sid = match cookies.get("SID"){
             Some(c) => c,
             None => return Ok(None)
         };
@@ -97,10 +97,10 @@ impl ManySessions{
     }
 
     pub async fn add_session(self: &Self, session: Session) -> Result<mongodb::results::InsertOneResult, mongodb::error::Error>{
-        self.sessions.insert_one(session, None).await
+        self.sessions.insert_one(mongodb::bson::to_bson(&session).unwrap(), None).await
     }
 
-    pub fn new(col: Collection<Session>) -> ManySessions{
+    pub fn new(col: Collection<bson::Bson>) -> ManySessions{
         ManySessions{
             sessions: col
         }
@@ -128,9 +128,10 @@ impl ManySessions{
             Ok(c) => c,
             Err(_) => return None
         };
-        match self.sessions.find_one(mongodb::bson::doc!{"session_id": session_id_serialized}, None).await{
-            Err(_) => None,
-            Ok(c) => c
-        }
+        let bson = match self.sessions.find_one(mongodb::bson::doc!{"session_id": session_id_serialized}, None).await{
+            Err(_) => return None,
+            Ok(c) => match c{None => return None, Some(c) => c}
+        };
+        Some(match bson::from_bson::<Session>(bson){Err(_) => return None, Ok(c) => c})
     }
 }

@@ -12,7 +12,12 @@ use common::{auth::user::User, models::DisplayState};
 use self::sessions::{ManySessions, Session};
 use self::user_collection::UserCollection;
 
-#[post("/signup", data = "<data>")]
+#[post("/signup", rank = 1)]
+pub fn redirect(session: Session) -> String{
+    serde_json::to_string(&DisplayState::Failure { message: "you must log out first".to_owned() }).unwrap()
+}
+
+#[post("/signup", data = "<data>", rank = 2)]
 pub async fn auth_signup_post(data: String, users: &State<UserCollection>, sessions: &State<ManySessions>, cookies: &CookieJar<'_>) -> String{
 
     let failure_message = serde_json::to_string(&DisplayState::Failure { message: "failed to create user".to_string() }).unwrap().to_string();
@@ -29,7 +34,7 @@ pub async fn auth_signup_post(data: String, users: &State<UserCollection>, sessi
         Ok(()) => (),
         Err(e) => {println!("Error: {}", e); return failure_message;}
     }
-    let user_oid = match users.deref().add_user(&user).await{
+    let _user_oid = match users.deref().add_user(&user).await{
         Ok(c) => {println!("{}", c.inserted_id.to_string()); c.inserted_id.as_object_id().unwrap()},
         Err(e) => {println!("Error: {}", e); return failure_message;}
     };
@@ -44,3 +49,10 @@ pub async fn auth_signup_post(data: String, users: &State<UserCollection>, sessi
     // Success response
     serde_json::to_string(&DisplayState::Success { message: "successfully created user".to_owned() }).unwrap()
 }
+
+/*
+#[post("/logout")]
+pub async fn auth_logout_post(sessions: &State<ManySessions>, session: Session){
+    sessions.deref().
+    
+}*/

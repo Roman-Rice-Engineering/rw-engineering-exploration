@@ -1,5 +1,4 @@
 use crate::Session;
-use mongodb::Client;
 use rocket::http::Status;
 use rocket::request::{Request, FromRequest};
 use rocket::request;
@@ -21,15 +20,17 @@ impl<'r> FromRequest<'r> for Session{
         let cookies = request.cookies();
         let sessions = match request.rocket().state::<ManySessions>(){
             Some(c) => c,
-            None => {println!("FAIL AT SESSIONS");return request::Outcome::Failure((Status::Forbidden, SessionAuthError::NoSessionsFound))}
+            None => return request::Outcome::Failure((Status::Forbidden, SessionAuthError::NoSessionsFound))
         };
-        println!("{}", cookies.get("SID").unwrap().value());
-        let session_id = serde_json::from_str::<Uuid>(cookies.get("SID").unwrap().value()).unwrap();
-
-        let session = sessions.get_session_by_session_id(session_id).await;
+        let csrf_token = request.headers().get("X-CSRF-Token").next().unwrap();
+        let csrf_token = serde_json::from_str::<Uuid>(csrf_token).unwrap();
+        let session = sessions.get_session_from_cookies_and_csrf_token(cookies, csrf_token).await;
         match session {
-            Some(c) => request::Outcome::Success(c),
-            None => request::Outcome::Failure((Status::Forbidden, SessionAuthError::NotAuthenticated))
+            Ok(c) => request::Outcome::Success(match c {
+                Some(c) => c,
+                None => return request::Outcome::Forward(())
+            }),
+            Err(e) => request::Outcome::Forward(())
         }
 
     }
