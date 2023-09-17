@@ -1,12 +1,11 @@
 use std::ops::Deref;
 
 use crate::auth::auth_form::{AuthForm, FormTextInput, FormSubmitButton};
-use crate::env::API_URL;
 use crate::lib::api_request;
+use crate::lib::auth_reload::auth_reload_login;
 use crate::route::AuthRoute;
 use common::auth::{User, Password, Email};
 use common::models::DisplayState;
-use gloo_net::http::Request;
 use web_sys::SubmitEvent;
 use yew::{classes, function_component, html, use_state, Callback, Html};
 use yew_router::prelude::*;
@@ -134,6 +133,7 @@ pub fn Signup() -> Html {
                     message: e.to_string(),
                 },
             });
+            auth_reload_login();
         });
     });
 

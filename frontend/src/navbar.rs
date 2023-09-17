@@ -1,15 +1,31 @@
+use std::ops::Deref;
+
+use common::auth::User;
 use yew::prelude::*;
 use yew_router::prelude::*;
-use crate::{Route, route::AuthRoute};
-
-#[derive(Properties, PartialEq)]
-pub struct MainNavProps {
-    pub username: Option<String>
-}
+use crate::{Route, route::AuthRoute, lib::api_request::api_request};
 
 #[function_component]
-pub fn MainNav(MainNavProps { username }: &MainNavProps) -> Html{
-    html!{<NavBar username={username.clone()}/>}
+pub fn MainNav() -> Html{
+    let username = use_state(|| Option::<String>::default());
+    {
+        let username = username.clone();
+        use_effect_with_deps(move |_| {
+                wasm_bindgen_futures::spawn_local(async move {
+                let response = match api_request("/auth/profile/", None)
+                .await{
+                    Ok(c) => c,
+                    Err(_) => return
+                };
+                let user = match serde_json::from_str::<User>(&response){
+                    Ok(c) => c,
+                    Err(_) => return
+                };
+                username.set(Some(user.get_username().to_owned()))
+            });
+        },());
+    }
+    html!{<NavBar username={username.deref().clone()}/>}
 }
 
 #[function_component]
