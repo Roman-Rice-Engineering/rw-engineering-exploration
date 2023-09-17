@@ -8,6 +8,8 @@ edition = "2021"
 [dependencies]
 serde = { version = "1.0.188", features = ["derive"] }
 bcrypt = { version = "0.15", optional = true } 
+bson = {version = "2.7.0"}
+
 
 [features]
 bcrypt = ["dep:bcrypt"]

@@ -10,6 +10,8 @@ use crate::auth::password::PasswordHashError;
 #[derive(Debug, PartialEq, Eq, Clone)]
 #[derive(Serialize, Deserialize)]
 pub struct User{
+    #[serde(alias = "_id")]
+    id: Option<bson::oid::ObjectId>,
     username: String,
     email: Email,
     password: Password,
@@ -20,10 +22,32 @@ pub struct User{
 impl User {
     pub fn new(username: String, email: Email, password: Password) -> User{
         User{
+            id: None,
             username,
             email,
             password
         }
+    }
+    pub fn washout_password(self: Self) -> Self{
+        Self { 
+            id: self.id,
+            username: self.username,
+            email: self.email,
+            password: Password::None
+        }
+    }
+    pub fn washout(self: Self) -> Self{
+        Self{
+            id: None,
+            username: self.username,
+            email: self.email,
+            password: Password::None
+        }
+        
+    }
+
+    pub fn set_id(self: &mut Self, id: bson::oid::ObjectId){
+        self.id = Some(id); 
     }
 
     pub fn is_valid_with_plaintext_password(self: &Self) -> Result<(), &str> {

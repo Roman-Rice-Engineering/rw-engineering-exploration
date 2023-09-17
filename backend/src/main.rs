@@ -1,4 +1,5 @@
-
+mod env;
+use auth::sessions::{ManySessions, Session};
 use auth::user_collection::UserCollection;
 use mongodb::options::IndexOptions;
 use rocket::{get, routes};
@@ -31,9 +32,11 @@ async fn rocket() -> _ {
     let db_uri = std::env::var("DB_URI").expect("unable to find 'DB_URI' env variable");
     let db_client = Client::with_uri_str(db_uri).await.expect("unable to connect to database");
     let users = create_users_collection(&db_client).await.expect("unable to create unique index 'username'");
+    let sessions = ManySessions::new(db_client.database("auth").collection::<Session>("sessions"));
 
     rocket::build()
         .manage(users)
+        .manage(sessions)
         .mount("/auth", routes![index, auth_signup_post])
 }
 
