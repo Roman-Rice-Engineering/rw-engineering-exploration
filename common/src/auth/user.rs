@@ -18,6 +18,10 @@ pub struct User{
 
 
 impl User {
+    pub fn get_username(self: &Self) -> &str{
+        &self.username
+    }
+
     pub fn new(username: String, email: Email, password: Password) -> User{
         User{
             username,
