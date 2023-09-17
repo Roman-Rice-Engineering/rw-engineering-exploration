@@ -24,11 +24,11 @@ impl Session{
             expiration: chrono::Utc::now() + chrono::Duration::days(1),
         }
     }
-/*
+
     pub fn get_user(self: &Self) -> &User {
         &self.user
     }
-
+/*
     pub fn get_session_id(self: &Self) -> &Uuid{
         &self.session_id
     }
