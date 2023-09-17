@@ -4,7 +4,7 @@ use auth::user_collection::UserCollection;
 use mongodb::options::IndexOptions;
 use rocket::{get, routes};
 mod auth;
-use crate::auth::auth_signup_post;
+use crate::auth::{signup, logout};
 use mongodb::{Client, IndexModel};
 use common::auth::User;
 
@@ -26,7 +26,7 @@ async fn rocket() -> _ {
     rocket::build()
         .manage(users)
         .manage(sessions)
-        .mount("/auth", routes![index, auth::auth_logout_post,auth::redirect, auth_signup_post])
+        .mount("/auth", routes![index, signup::auth_signup_post])
 }
 
 async fn create_users_collection(db_client: &Client) -> Result<UserCollection, mongodb::error::Error>{
