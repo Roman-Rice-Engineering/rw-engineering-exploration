@@ -14,7 +14,7 @@ use yew_router::prelude::*;
 
 fn switch_auth(route: AuthRoute) -> Html {
     match route{
-        AuthRoute::Login => html!{"Login Page!"},
+        AuthRoute::Login => html!{<auth::Login />},
         AuthRoute::Logout => html!{<auth::Logout />},
         AuthRoute::Profile => html!{"Your Profile!"},
         AuthRoute::Signup => html!{<auth::Signup />},

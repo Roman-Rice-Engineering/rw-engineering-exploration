@@ -138,7 +138,7 @@ pub fn Signup() -> Html {
     });
 
     html! {
-        <AuthForm alert={alert_html}>
+        <AuthForm alert={alert_html} title={"Create an account"}>
             <form {onsubmit}>
                 <FormTextInput name="button1" placeholder="Username" onchange={username_changed} value={username_state.deref().clone()}/>
                 <FormTextInput name="button2" placeholder="email@example.com" input_type="email" onchange={email_changed} value={email_state.deref().clone()} />

@@ -5,11 +5,12 @@ use wasm_bindgen::JsCast;
 #[derive(Properties, PartialEq, Clone)]
 pub struct AuthFormProps{
     pub children: Children,
-    pub alert: Html
+    pub alert: Html,
+    pub title: String
 }
 
 #[function_component]
-pub fn AuthForm(AuthFormProps { children, alert }: &AuthFormProps) -> Html {
+pub fn AuthForm(AuthFormProps { title, children, alert }: &AuthFormProps) -> Html {
 
     html!{
         <section style="height: 90vh;" class="bg-caution">
@@ -19,7 +20,7 @@ pub fn AuthForm(AuthFormProps { children, alert }: &AuthFormProps) -> Html {
                   <div class="card" style="border-radius: 25px;">
                     <div class="card-body p-5">
                         {alert.clone()}
-                        <h2 class="text-center mb-5">{"Create an account"}</h2>
+                        <h2 class="text-center mb-5">{title.clone()}</h2>
                         {children.clone()}
                     </div>
                   </div>
