@@ -38,7 +38,8 @@ pub async fn auth_signup_post(data: String, users: &State<UserCollection>, sessi
     }
     let _user_oid = match users.deref().add_user(&user).await{
         Ok(c) => c.inserted_id.as_object_id().unwrap(),
-        Err(_) => return failure_message
+        Err(_) => return serde_json::to_string(&DisplayState::Failure { message: "user with that name already exists".to_string() }).unwrap().to_string()
+
     };
     let session = Session::new(user);
     let _ = session.push_session_to_cookies(cookies);
