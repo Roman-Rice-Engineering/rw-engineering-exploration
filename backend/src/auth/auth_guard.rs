@@ -22,8 +22,14 @@ impl<'r> FromRequest<'r> for Session{
             Some(c) => c,
             None => return request::Outcome::Failure((Status::Forbidden, SessionAuthError::NoSessionsFound))
         };
-        let csrf_token = request.headers().get("X-CSRF-Token").next().unwrap();
-        let csrf_token = serde_json::from_str::<Uuid>(csrf_token).unwrap();
+        let csrf_token = match request.headers().get("X-CSRF-Token").next(){
+            Some(c) => c,
+            None => ""
+        };
+        let csrf_token = match serde_json::from_str::<Uuid>(csrf_token){
+            Ok(c) => c,
+            Err(_) => uuid::Uuid::default()
+        };
         let session = sessions.get_session_from_cookies_and_csrf_token(cookies, csrf_token).await;
         match session {
             Ok(c) => request::Outcome::Success(match c {
