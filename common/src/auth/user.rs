@@ -45,6 +45,22 @@ impl User {
         
     }
 
+    pub fn get_plaintext_password(self: &Self) -> Option<String>{
+        match &self.password {
+            Password::None => None,
+            Password::Hash { .. } => None,
+            Password::Plaintext { password } => Some(password.to_owned())
+        }
+    }
+    pub fn get_hased_password(self: &Self) -> Option<String>{
+        match &self.password {
+            Password::None => None,
+            Password::Plaintext { .. } => None,
+            Password::Hash { hash } => Some(hash.to_owned())
+        }
+    }
+
+
     pub fn is_valid_with_plaintext_password(self: &Self) -> Result<(), &str> {
         if self.username.is_ascii() == false {
             return Err("username contains non ascii characters");

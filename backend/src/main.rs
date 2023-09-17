@@ -1,6 +1,8 @@
 mod env;
+use auth::login;
 use auth::sessions::{ManySessions, Session};
 use auth::user_collection::UserCollection;
+use mongodb::bson::Bson;
 use mongodb::options::IndexOptions;
 use rocket::{get, routes};
 mod auth;
@@ -31,7 +33,9 @@ async fn rocket() -> _ {
             signup::auth_signup_post,
             signup::redirect,
             logout::auth_logout_post,
-            profile::auth_profile_post
+            profile::auth_profile_post,
+            login::auth_login_post,
+            login::redirect
         ])
 }
 
@@ -44,8 +48,8 @@ async fn create_users_collection(db_client: &Client) -> Result<UserCollection, m
         .keys(mongodb::bson::doc!{"username": "text"})
         .options(options)
         .build();
-    match db_client.database("auth").collection::<User>("users").create_index(model, None).await{
-        Ok(_) => Ok(UserCollection::new(db_client.database("auth").collection::<User>("users"))),
+    match db_client.database("auth").collection::<Bson>("users").create_index(model, None).await{
+        Ok(_) => Ok(UserCollection::new(db_client.database("auth").collection::<Bson>("users"))),
         Err(e) => Err(e)
     }
 }
