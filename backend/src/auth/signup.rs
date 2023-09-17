@@ -12,7 +12,10 @@ use super::{user_collection::UserCollection, sessions::ManySessions};
 // creating a new user
 #[post("/signup", rank = 1)]
 pub fn redirect(_session: Session) -> String{
-    serde_json::to_string(&DisplayState::Failure { message: "you must log out first".to_owned() }).unwrap()
+    match serde_json::to_string(&DisplayState::Failure { message: "you must log out first".to_owned() }){
+        Ok(c) => c,
+        Err(_) => String::new()
+    }
 }
 
 // If user is not already logged in go to do signup
@@ -27,23 +30,19 @@ pub async fn auth_signup_post(data: String, users: &State<UserCollection>, sessi
     };
     match user.is_valid_with_plaintext_password() {
         Ok(()) => (),
-        Err(e) => {println!("Error: {}", e); return failure_message;}
+        Err(_) => return failure_message
     }
     match user.hash() {
         Ok(()) => (),
-        Err(e) => {println!("Error: {}", e); return failure_message;}
+        Err(_) => return failure_message
     }
     let _user_oid = match users.deref().add_user(&user).await{
-        Ok(c) => {println!("{}", c.inserted_id.to_string()); c.inserted_id.as_object_id().unwrap()},
-        Err(e) => {println!("Error: {}", e); return failure_message;}
+        Ok(c) => c.inserted_id.as_object_id().unwrap(),
+        Err(_) => return failure_message
     };
     let session = Session::new(user);
     let _ = session.push_session_to_cookies(cookies);
-    let result = sessions.add_session(session).await;
-    println!("{}", match result{
-        Ok(c) => c.inserted_id.to_string(),
-        Err(e) => e.to_string()
-    });
+    let _ = sessions.add_session(session).await;
 
     // Success response
     serde_json::to_string(&DisplayState::Success { message: "successfully created user".to_owned() }).unwrap()
