@@ -112,6 +112,14 @@ pub fn Signup() -> Html {
             Email::new(email_state_cloned.deref().clone()),
             Password::new_plaintext(password),
         );
+        match user_data.is_valid_with_plaintext_password() {
+            Ok(()) => (),
+            Err(e) => {
+                alert_state_cloned
+                    .set(DisplayState::Failure { message: e.to_string() });
+                return;
+            }
+         }
         let user_data = serde_json::to_string_pretty(&user_data).unwrap();
         wasm_bindgen_futures::spawn_local(async move {
             let post_submission: String = Request::post(&(API_URL.to_owned() + "auth/signup/"))
