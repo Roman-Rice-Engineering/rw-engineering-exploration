@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use common::{models::DisplayState, auth::user::{User, UserBackend}};
+use common::{models::DisplayState, auth::{user::{User, UserBackend}, person::PersonBackend}};
 use rocket::{http::CookieJar, State, post};
 use crate::auth::sessions::Session;
 
@@ -19,7 +19,7 @@ pub fn redirect(_session: Session) -> String{
 
 // If user is not already logged in go to do signup
 #[post("/signup", data = "<data>", rank = 2)]
-pub async fn auth_signup_post(data: String, users: &State<UserCollection>, sessions: &State<ManySessions>, cookies: &CookieJar<'_>) -> String{
+pub async fn auth_signup_post(data: String, people: &State<mongodb::Collection<PersonBackend>>, users: &State<UserCollection>, sessions: &State<ManySessions>, cookies: &CookieJar<'_>) -> String{
 
     let failure_message = serde_json::to_string(&DisplayState::Failure { message: "failed to create user".to_string() }).unwrap().to_string();
 
@@ -35,17 +35,28 @@ pub async fn auth_signup_post(data: String, users: &State<UserCollection>, sessi
         Ok(()) => (),
         Err(_) => return failure_message
     }
-    let user = UserBackend::from_user(user);
-    let _user_oid = match users.deref().add_user(&user).await{
+    let mut user = UserBackend::from_user(user);
+    let user_oid = match users.deref().add_user(&user).await{
         Ok(c) => c.inserted_id.as_object_id().unwrap(),
         Err(_) => return serde_json::to_string(&DisplayState::Failure { message: "user with that name already exists".to_string() }).unwrap().to_string()
 
     };
-    let session = Session::new(user.to_user());
+    let session = Session::new(user.clone().to_user());
     let _ = session.push_session_to_cookies(cookies);
     let _ = sessions.add_session(session).await;
 
+    user.put_id(user_oid);
+    
+    let person = PersonBackend::new("Placeholder".to_owned(), "Person".to_owned(), user).unwrap();
+
+    match people.insert_one(person, None).await {
+        Ok(_) => (),
+        Err(_) => return failure_message
+    }
+
     // Success response
-    serde_json::to_string(&DisplayState::Success { message: "successfully created user".to_owned() }).unwrap()
+    return serde_json::to_string(&DisplayState::Success { message: "successfully created user".to_owned() }).unwrap();
+
+    todo!();// Move person creation elsewhere
 }
 

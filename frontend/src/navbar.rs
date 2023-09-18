@@ -36,10 +36,9 @@ fn NavBar(authwidgetprops: &AuthWidgetProps) -> Html {
                 <NavBrand name="RW Engineering" />
                 <NavToggler />
                 <Navigator authwidgetprops={authwidgetprops.clone()}>
-                    <NavItem to={Route::Index} text="Home" active={true}/>
-                    <NavItem to={Route::Projects} text="Projects" />
-                    <NavItem to={Route::Auth} text="Auth" />
-                    <NavItem to={Route::NotFound} text="ERROR404" />
+                    <NavItem to={Route::Index} text="Home" active={true} />
+                    <NavItem to={Route::PeopleRoot} text="People" />
+                    <NavItem to={Route::ProjectsRoot} text="Projects" />
                 </Navigator>
             </div>
         </nav>

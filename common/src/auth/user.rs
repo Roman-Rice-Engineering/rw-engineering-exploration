@@ -32,6 +32,9 @@ impl UserBackend {
     pub fn get_id(self: &Self) -> Option<ObjectId> {
         self.id
     }
+    pub fn put_id(self: &mut Self, id: ObjectId){
+        self.id = Some(id);
+    }
     pub fn to_user(self: Self) -> User{
         User{
             username: self.user.username,
