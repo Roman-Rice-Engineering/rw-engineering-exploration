@@ -43,3 +43,12 @@ pub enum AuthRoute{
     #[at("/auth/404")]
     NotFound,
 }
+
+#[derive(Clone, Routable, PartialEq)]
+pub enum PeopleRoute{
+    #[at("/people")]
+    Index,
+    #[not_found]
+    #[at("/auth/404")]
+    NotFound,
+}

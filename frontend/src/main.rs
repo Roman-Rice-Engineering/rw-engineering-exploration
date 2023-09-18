@@ -3,11 +3,12 @@ use navbar::MainNav;
 mod util;
 
 mod auth;
+mod people;
 
 mod env;
 
 mod route;
-use route::{Route, AuthRoute};
+use route::{Route, AuthRoute, PeopleRoute};
 
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -22,11 +23,18 @@ fn switch_auth(route: AuthRoute) -> Html {
     }
 }
 
+fn switch_people(route: PeopleRoute) -> Html {
+    match route {
+        PeopleRoute::Index => html!{<people::People />},
+        PeopleRoute::NotFound => html!{<Redirect<Route> to={Route::NotFound}/>}
+    }
+}
+
 fn switch(route: Route) -> Html{
     let body = match route{
         Route::Index => html!{"Index Page!"},
         Route::Projects | Route::ProjectsRoot => html!{"Projects Page!"},
-        Route::People | Route::PeopleRoot => html!{"People Page!"},
+        Route::People | Route::PeopleRoot => html!{<Switch<PeopleRoute> render={switch_people}/>},
         Route::Auth | Route::AuthRoot => html!{<Switch<AuthRoute> render={switch_auth}/>},
         Route::NotFound => html!{"Error 404"}
     };

@@ -9,6 +9,7 @@ use rocket::{get, routes};
 mod auth;
 use crate::auth::{signup, logout, profile};
 use mongodb::{Client, IndexModel};
+mod people;
 
 
 #[get("/hello")]
@@ -39,6 +40,7 @@ async fn rocket() -> _ {
             login::auth_login_post,
             login::redirect
         ])
+        .mount("/people", routes![people::people_index])
 }
 
 async fn create_users_collection(db_client: &Client) -> Result<UserCollection, mongodb::error::Error>{
