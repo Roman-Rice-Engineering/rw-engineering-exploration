@@ -9,6 +9,14 @@ SCRIPT_DIR="$(dirname $(realpath $0))"
 # Set up cleanup
 trap cleanup INT
 
+if [ -z ${STORAGE_BUCKET_NAME} ]
+then
+	echo "Cannot find bucket env var - exiting"
+	exit 1
+else
+	echo "Bucket env var exists..."
+fi
+
 function cleanup() {
 	docker stop $DB_CONTAINER_NAME
 	exit 0
@@ -32,6 +40,7 @@ docker run \
 	-e "DB_URI=$DB_URI" \
 	-e "API_URL=http://localhost:7000/api/" \
 	-e "IS_PRODUCTION=false" \
+	-e "STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME"
 	--network $NETWORK_NAME -p 7000:80 -it --rm --name $DEV_SERVER_CONTAINER_NAME $DEV_SERVER_IMAGE_NAME
 
 # Cleanup in case we reach the end of file
