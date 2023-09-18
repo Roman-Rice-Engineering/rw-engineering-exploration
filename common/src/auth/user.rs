@@ -21,7 +21,7 @@ pub struct User{
 #[derive(Debug, PartialEq, Eq, Clone)]
 #[derive(Serialize, Deserialize)]
 pub struct UserBackend{
-    user: User,
+    pub user: User,
     #[serde(alias = "_id")]
     id: Option<ObjectId>, 
     //person: Option<Person>
@@ -30,6 +30,20 @@ pub struct UserBackend{
 impl UserBackend {
     pub fn get_id(self: &Self) -> Option<ObjectId> {
         self.id
+    }
+    pub fn to_user(self: Self) -> User{
+        User{
+            username: self.user.username,
+            email: self.user.email,
+            password: self.user.password
+        }
+    }
+    pub fn from_user(user: User) -> UserBackend{
+        UserBackend{
+            user,
+            id: None,
+
+        }
     }
 }
 

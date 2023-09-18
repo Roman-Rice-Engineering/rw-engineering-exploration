@@ -21,7 +21,7 @@ pub async fn auth_login_post(data: String, users: &State<UserCollection>, sessio
         Ok(value) => value,
         Err(_) => return failure_message
     };
-    let user: common::auth::User = match users.get_by_name(&input_user.get_username()).await {
+    let user: common::auth::user::UserBackend = match users.get_by_name(&input_user.get_username()).await {
        Some(c) => c,
         None => return failure_message
     };
@@ -30,7 +30,7 @@ pub async fn auth_login_post(data: String, users: &State<UserCollection>, sessio
         None => return failure_message
     };
 
-    let verification = match user.verify(&plaintext_password){
+    let verification = match user.user.verify(&plaintext_password){
         Ok(c) => c,
         Err(_) => return failure_message
     };
@@ -38,7 +38,7 @@ pub async fn auth_login_post(data: String, users: &State<UserCollection>, sessio
     if verification == false{
        return failure_message 
     }else if verification == true{
-    let session = Session::new(user);
+    let session = Session::new(user.to_user());
     let _ = session.push_session_to_cookies(cookies);
     let _ = sessions.add_session(session).await;
     }

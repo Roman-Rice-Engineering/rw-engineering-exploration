@@ -1,4 +1,4 @@
-use crate::User;
+use common::auth::user::UserBackend;
 use mongodb::{Collection, results::InsertOneResult, bson::{doc, Bson}, bson};
 
 pub struct UserCollection{
@@ -12,7 +12,7 @@ impl UserCollection {
         }
     }
 
-    pub async fn add_user(self: &Self, user: &User) -> Result<InsertOneResult, &str>{
+    pub async fn add_user(self: &Self, user: &UserBackend) -> Result<InsertOneResult, &str>{
        match self.users.insert_one(match bson::to_bson(user){
             Ok(c) => c,
             Err(_) => return Err("failed to insert user")
@@ -22,7 +22,7 @@ impl UserCollection {
         }
     }
 
-    pub async fn get_by_name(self: &Self, name: &str) -> Option<User>{
+    pub async fn get_by_name(self: &Self, name: &str) -> Option<UserBackend>{
         let user: Bson = match self.users.find_one(doc!{"username": name}, None).await{
             Ok(c) => match c{
                 Some(c) => c,
@@ -30,7 +30,7 @@ impl UserCollection {
             },
             Err(_) => return None
         };
-        match bson::from_bson::<User>(user){
+        match bson::from_bson::<UserBackend>(user){
             Err(_) => None,
             Ok(c) => Some(c) 
         }
