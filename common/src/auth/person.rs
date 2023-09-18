@@ -34,6 +34,13 @@ impl PersonBackend {
             }
         })
     }
+
+    pub fn to_user(self: Self) -> Person{
+        Person{
+            first_name: self.person.get_first_name().to_owned(),
+            last_name: self.person.get_last_name().to_owned(),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -44,6 +51,12 @@ pub struct Person{
 }
 
 impl Person{
+    pub fn get_first_name(self: &Self) -> &str {
+        &self.first_name
+    }
+    pub fn get_last_name(self: &Self) -> &str {
+        &self.last_name
+    }
     pub fn new(first_name: String, last_name: String) -> Person {
        Person{
             first_name,
