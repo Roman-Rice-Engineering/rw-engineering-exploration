@@ -35,7 +35,7 @@ impl PersonBackend {
         })
     }
 
-    pub fn to_user(self: Self) -> Person{
+    pub fn to_person(self: Self) -> Person{
         Person{
             first_name: self.person.get_first_name().to_owned(),
             last_name: self.person.get_last_name().to_owned(),
