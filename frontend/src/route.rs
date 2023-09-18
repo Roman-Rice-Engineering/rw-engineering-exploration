@@ -11,7 +11,14 @@ pub enum Route {
     Auth,
 
     #[at("/projects")]
+    ProjectsRoot,
+    #[at("/projects/*")]
     Projects,
+
+    #[at("/people")]
+    PeopleRoot,
+    #[at("/people/*")]
+    People,
 
     #[not_found]
     #[at("/404")]

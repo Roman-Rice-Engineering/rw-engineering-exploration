@@ -25,7 +25,8 @@ fn switch_auth(route: AuthRoute) -> Html {
 fn switch(route: Route) -> Html{
     let body = match route{
         Route::Index => html!{"Index Page!"},
-        Route::Projects => html!{"Projects Page!"},
+        Route::Projects | Route::ProjectsRoot => html!{"Projects Page!"},
+        Route::People | Route::PeopleRoot => html!{"People Page!"},
         Route::Auth | Route::AuthRoot => html!{<Switch<AuthRoute> render={switch_auth}/>},
         Route::NotFound => html!{"Error 404"}
     };
