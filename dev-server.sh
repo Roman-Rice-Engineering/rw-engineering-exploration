@@ -50,7 +50,7 @@ docker run \
 	-e "IS_PRODUCTION=false" \
 	-e "STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME}" \
 	-e "SERVICE_ACCOUNT_JSON=${SERVICE_ACCOUNT_JSON}" \
-	-v ${SERVICE_ACCOUNT_JSON} ${SERVICE_ACCOUNT_JSON} \
+	-v $(dirname ${SERVICE_ACCOUNT_JSON}) $(dirname $(realpath ${SERVICE_ACCOUNT_JSON})) \
 	--network $NETWORK_NAME -p 7000:80 -it --rm --name $DEV_SERVER_CONTAINER_NAME $DEV_SERVER_IMAGE_NAME
 
 # Cleanup in case we reach the end of file
