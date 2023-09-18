@@ -11,11 +11,19 @@ trap cleanup INT
 
 if [ -z ${STORAGE_BUCKET_NAME} ]
 then
-	echo "Cannot find bucket env var - exiting"
+	echo "Cannot find STORAGE_BUCKET_NAME - exiting"
 	exit 1
 else
 	echo "Bucket env var exists..."
 fi
+if [ -z ${SERVICE_ACCOUNT_JSON} ]
+then
+	echo "Cannot find SERIVE_ACCOUNT_JSON - exiting"
+	exit 1
+else
+	echo "Bucket env var exists..."
+fi
+
 
 function cleanup() {
 	docker stop $DB_CONTAINER_NAME
@@ -40,7 +48,8 @@ docker run \
 	-e "DB_URI=$DB_URI" \
 	-e "API_URL=http://localhost:7000/api/" \
 	-e "IS_PRODUCTION=false" \
-	-e "STORAGE_BUCKET_NAME=$STORAGE_BUCKET_NAME" \
+	-e "STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME}" \
+	-e "SERVICE_ACCOUNT_JSON=${SERVICE_ACCOUNT_JSON}" \
 	--network $NETWORK_NAME -p 7000:80 -it --rm --name $DEV_SERVER_CONTAINER_NAME $DEV_SERVER_IMAGE_NAME
 
 # Cleanup in case we reach the end of file
