@@ -13,6 +13,7 @@ pub struct PersonBackend{
     #[serde(rename = "_id")]
     #[serde(skip_serializing)]
     id: Option<ObjectId>,
+    uuid: uuid::Uuid,
     person: Person,
     projects: Vec<ObjectId>,
     blogs: Vec<ObjectId>,
@@ -24,7 +25,8 @@ pub struct PersonBackend{
 impl PersonBackend {
     pub fn new(first_name: String, last_name: String, user: UserBackend) -> Option<PersonBackend>{
         Some(PersonBackend{
-            person: Person {first_name, last_name, uuid: uuid::Uuid::new_v4()},
+            person: Person {first_name, last_name},
+            uuid: uuid::Uuid::new_v4(),
             id: None,
             projects: Vec::new(),
             blogs: Vec::new(),
@@ -38,7 +40,6 @@ impl PersonBackend {
 
     pub fn to_person(self: Self) -> Person{
         Person{
-            uuid: self.person.uuid,
             first_name: self.person.get_first_name().to_owned(),
             last_name: self.person.get_last_name().to_owned(),
         }
@@ -48,7 +49,6 @@ impl PersonBackend {
 #[derive(Debug, PartialEq, Eq, Clone)]
 #[derive(Serialize, Deserialize)]
 pub struct Person{
-    uuid: uuid::Uuid,
     first_name: String,
     last_name: String,
 }
@@ -62,7 +62,6 @@ impl Person{
     }
     pub fn new(first_name: String, last_name: String) -> Person {
        Person{
-            uuid: uuid::Uuid::new_v4(),
             first_name,
             last_name,
         }
