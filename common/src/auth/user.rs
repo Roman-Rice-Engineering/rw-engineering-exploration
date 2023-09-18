@@ -6,6 +6,8 @@ use crate::auth::Email;
 use crate::auth::Password;
 #[cfg(feature = "bcrypt")]
 use crate::auth::password::PasswordHashError;
+#[cfg(feature = "database")]
+use mongodb::bson::oid::ObjectId;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 #[derive(Serialize, Deserialize)]
@@ -15,6 +17,21 @@ pub struct User{
     password: Password,
 }
 
+#[cfg(feature = "database")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Serialize, Deserialize)]
+pub struct UserBackend{
+    user: User,
+    #[serde(alias = "_id")]
+    id: Option<ObjectId>, 
+    //person: Option<Person>
+}
+#[cfg(feature = "database")]
+impl UserBackend {
+    pub fn get_id(self: &Self) -> Option<ObjectId> {
+        self.id
+    }
+}
 
 
 impl User {

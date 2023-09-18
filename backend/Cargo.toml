@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 rocket = {version = "0.5.0-rc.3", features = ["secrets"]}
-common = {path = "../common", features = ["bcrypt"]}
+common = {path = "../common", features = ["bcrypt", "database"]}
 serde_json = "1.0.107"
 serde = { version = "1.0.188", features = ["derive"] }
 mongodb = "2.6.1"
