@@ -23,15 +23,16 @@ impl UserCollection {
     }
 
     pub async fn get_by_name(self: &Self, name: &str) -> Option<UserBackend>{
-        let user: Bson = match self.users.find_one(doc!{"username": name}, None).await{
+        let user: Bson = match self.users.find_one(doc!{"user.username": name}, None).await{
             Ok(c) => match c{
                 Some(c) => c,
                 None => return None
             },
             Err(_) => return None
         };
+        println!("FOUND");
         match bson::from_bson::<UserBackend>(user){
-            Err(_) => None,
+            Err(e) => {println!("{}", e);None},
             Ok(c) => Some(c) 
         }
     }

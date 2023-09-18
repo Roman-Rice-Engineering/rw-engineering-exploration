@@ -22,7 +22,8 @@ pub struct User{
 #[derive(Serialize, Deserialize)]
 pub struct UserBackend{
     pub user: User,
-    #[serde(alias = "_id")]
+    #[serde(rename = "_id")]
+    #[serde(skip_serializing)]
     id: Option<ObjectId>, 
     //person: Option<Person>
 }
