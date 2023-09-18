@@ -10,7 +10,8 @@ use super::user::UserBackend;
 #[derive(Debug, PartialEq, Eq, Clone)]
 #[derive(Serialize, Deserialize)]
 pub struct PersonBackend{
-    #[serde(alias = "_id")]
+    #[serde(rename = "_id")]
+    #[serde(skip_serializing)]
     id: Option<ObjectId>,
     person: Person,
     projects: Vec<ObjectId>,
