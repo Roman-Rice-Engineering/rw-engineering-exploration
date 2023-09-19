@@ -46,6 +46,7 @@ async fn rocket() -> _ {
             signup::redirect,
             logout::auth_logout_post,
             profile::auth_profile_post,
+            profile::auth_person_post,
             login::auth_login_post,
             login::redirect
         ])

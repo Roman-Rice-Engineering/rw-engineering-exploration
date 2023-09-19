@@ -56,6 +56,9 @@ impl UserBackend {
             person: None
         }
     }
+    pub fn get_person_id(self: &Self) -> Option<ObjectId>{
+        self.person
+    }
 }
 
 

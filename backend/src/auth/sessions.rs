@@ -34,7 +34,7 @@ impl Session{
     pub async fn get_person_backend(self: &Self, users: &UserCollection, people: &Collection<PersonBackend>) -> Option<PersonBackend>{
         let username = self.get_user().get_username();
         let user = users.get_by_name(username).await?;
-        match people.find_one(bson::doc!{"_id": user.get_id()?}, None).await{
+        match people.find_one(bson::doc!{"_id": user.get_person_id()?}, None).await{
             Ok(c) => c,
             Err(_) => None
         }
