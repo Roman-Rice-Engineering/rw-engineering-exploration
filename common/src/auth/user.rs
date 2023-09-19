@@ -9,6 +9,7 @@ use crate::auth::password::PasswordHashError;
 #[cfg(feature = "database")]
 use mongodb::bson::oid::ObjectId;
 
+#[cfg(feature = "database")]
 use super::person::PersonBackend;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
