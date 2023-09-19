@@ -40,7 +40,10 @@ async fn rocket() -> _ {
             login::auth_login_post,
             login::redirect
         ])
-        .mount("/people", routes![people::people_index])
+        .mount("/people", routes![
+        people::people_index,
+        people::people_person
+    ])
 }
 
 async fn create_users_collection(db_client: &Client) -> Result<UserCollection, mongodb::error::Error>{
