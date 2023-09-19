@@ -4,6 +4,7 @@ mod util;
 
 mod auth;
 mod people;
+mod blog;
 
 mod env;
 
@@ -25,7 +26,7 @@ fn switch_auth(route: AuthRoute) -> Html {
 
 fn switch_blog(route: BlogRoute) -> Html {
     match route{
-        BlogRoute::CreateBlog => html!{"Create blog!"},
+        BlogRoute::CreateBlog => html!{<blog::create::CreateBlog />},
         BlogRoute::ViewBlog{ uuid } => html!{<>{"Viewing blog: "}{uuid}</>},
         BlogRoute::NotFound => html!{<Redirect<Route> to={Route::NotFound}/>}
     }
