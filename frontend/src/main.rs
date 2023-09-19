@@ -17,7 +17,7 @@ fn switch_auth(route: AuthRoute) -> Html {
     match route{
         AuthRoute::Login => html!{<auth::Login />},
         AuthRoute::Logout => html!{<auth::Logout />},
-        AuthRoute::Profile => html!{"Your Profile!"},
+        AuthRoute::Profile => html!{<auth::Profile />},
         AuthRoute::Signup => html!{<auth::Signup />},
         AuthRoute::NotFound => html!{<Redirect<Route> to={Route::NotFound}/>}
     }
