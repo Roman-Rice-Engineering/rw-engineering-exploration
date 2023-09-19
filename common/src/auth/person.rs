@@ -54,6 +54,9 @@ pub struct Person{
 }
 
 impl Person{
+    pub fn get_uuid(self: &Self) -> &uuid::Uuid{
+        &self.uuid
+    }
     pub fn get_first_name(self: &Self) -> &str {
         &self.first_name
     }

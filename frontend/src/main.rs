@@ -26,6 +26,7 @@ fn switch_auth(route: AuthRoute) -> Html {
 fn switch_people(route: PeopleRoute) -> Html {
     match route {
         PeopleRoute::Index => html!{<people::People />},
+        PeopleRoute::Person{ uuid } => html!{uuid},
         PeopleRoute::NotFound => html!{<Redirect<Route> to={Route::NotFound}/>}
     }
 }

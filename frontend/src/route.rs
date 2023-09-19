@@ -48,6 +48,10 @@ pub enum AuthRoute{
 pub enum PeopleRoute{
     #[at("/people")]
     Index,
+
+    #[at("/people/:uuid")]
+    Person{ uuid: String},
+
     #[not_found]
     #[at("/auth/404")]
     NotFound,

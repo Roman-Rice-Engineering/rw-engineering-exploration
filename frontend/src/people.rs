@@ -1,10 +1,12 @@
 use std::ops::Deref;
+use yew_router::prelude::Link;
 
 use common::auth::Person;
 use wasm_bindgen_futures::spawn_local;
 use yew::{function_component, Html, html, use_effect_with_deps, use_state};
 use yew::Properties;
 
+use crate::route::PeopleRoute;
 use crate::util::api_request::api_request;
 
 
@@ -55,15 +57,15 @@ fn OnePerson(OnePersonProps { person }: &OnePersonProps) -> Html{
     html!{
         <div class="col">
             <div class="card shadow-sm">
-                <a href="/blog/{{blog.id}}" class="image-zoom-hover-wrapper">
+                <Link<PeopleRoute> to={PeopleRoute::Person { uuid: person.get_uuid().to_string() }} classes="image-zoom-hover-wrapper">
                     <img class="card-img-top image-zoom-hover" src="https://loremflickr.com/640/640" focusable="false" />
-                </a>
+                </Link<PeopleRoute>>
                 <div class="card-body">
                     <p class="card-text">{person.get_first_name()}{" "}{person.get_last_name()}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <form method="post" action="#">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-outline-primary">{"More Information"}</button>
+                                <Link<PeopleRoute> to={PeopleRoute::Person {uuid: person.get_uuid().to_string()}} classes="btn btn-outline-primary">{"More Information"}</Link<PeopleRoute>>
                             </div>
                         </form>
                         <small class="text-muted"></small>
