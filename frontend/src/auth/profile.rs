@@ -1,4 +1,4 @@
-use common::auth::Person;
+use common::auth::{Person, User};
 use yew::{function_component, html, Html, use_state, use_effect_with_deps, platform::spawn_local};
 
 use crate::util::api_request::api_request;
@@ -26,13 +26,49 @@ pub fn Profile() -> Html{
         }, ());
     }
 
+    let user = use_state(|| Option::<User>::default());
+    {
+        let user = user.clone();
+        use_effect_with_deps(move |_| {
+            spawn_local(async move {
+                let response_user = match api_request("/auth/profile/", None).await{
+                    Ok(c) => c,
+                    Err(_) => return
+                };
+                let response_user = match serde_json::from_str::<Option<User>>(&response_user){
+                    Ok(c) => c,
+                    Err(_) => return
+                };
+                user.set(response_user);
+            });
+        }, ());
+    }
+
+    let user_html = match &*user{
+        None => html!{<p>{"Could not fetch user data"}</p>},
+        Some(user) => html!{
+            <div>
+                <p>{"Currently logged in as:\n"}{user.get_username()}</p>
+            </div>
+        }
+    };
+
+    let person_html = match &*person {
+        None => html!{<p>{"Account not associated with public profile."}</p>},
+        Some(person) => html!{
+            <div>
+                <p>{"Current public profile: "}</p>
+                <p>{"Name: "}{person.get_first_name()}{" "}{person.get_last_name()}</p>
+                <p>{"Your current uuid: "}{person.get_uuid().to_string()}</p>
+            </div>
+            
+        }
+    }; 
+
     html!{
         <div>
-            <p>{"Currently logged in as: "}</p>
-            {match serde_json::to_string(&*person){
-                Ok(c) => c,
-                Err(_) => String::new()
-            }}
+            {user_html}
+            {person_html}
         </div>
     }
 }
