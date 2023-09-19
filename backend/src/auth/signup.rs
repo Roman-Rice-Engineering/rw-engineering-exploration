@@ -49,10 +49,12 @@ pub async fn auth_signup_post(data: String, people: &State<mongodb::Collection<P
     
     let person = PersonBackend::new("Placeholder".to_owned(), "Person".to_owned(), user).unwrap();
 
-    match people.insert_one(person, None).await {
-        Ok(_) => (),
+    let person_id = match people.insert_one(person, None).await {
+        Ok(c) => c.inserted_id.as_object_id(),
         Err(_) => return failure_message
-    }
+    };
+
+    let _ = users.put_person_query_by_oid(user_oid, person_id).await;
 
     // Success response
     return serde_json::to_string(&DisplayState::Success { message: "successfully created user".to_owned() }).unwrap();

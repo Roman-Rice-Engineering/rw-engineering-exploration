@@ -1,5 +1,5 @@
 use common::auth::user::UserBackend;
-use mongodb::{Collection, results::InsertOneResult, bson::{doc, Bson}, bson};
+use mongodb::{Collection, results::{InsertOneResult, UpdateResult}, bson::{doc, Bson}, bson::{self, oid::ObjectId}};
 
 pub struct UserCollection{
     users: Collection<Bson>,
@@ -35,5 +35,11 @@ impl UserCollection {
             Err(e) => {println!("{}", e);None},
             Ok(c) => Some(c) 
         }
+    }
+
+    pub async fn put_person_query_by_oid(self: &Self, user_id: ObjectId, person_id: Option<ObjectId>) -> Result<UpdateResult, mongodb::error::Error>{
+        let query = doc! {"_id": user_id};
+        let update = doc! { "$set": { "person": person_id}};
+        self.users.update_one(query, update, None).await
     }
 }
