@@ -39,7 +39,7 @@ pub async fn people_person(
     };
     let uuid = match mongodb::bson::ser::to_bson_with_options(&uuid, SerializerOptions::builder().human_readable(false).build()){
         Ok(c) => c,
-        Err(e) => return failure_message
+        Err(_) => return failure_message
     };
     let person = match people.find_one(doc!{"person.uuid": uuid}, None).await{
         Ok(c) => c,
