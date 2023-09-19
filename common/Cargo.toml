@@ -9,7 +9,7 @@ edition = "2021"
 serde = { version = "1.0.188", features = ["derive"] }
 bcrypt = { version = "0.15", optional = true } 
 mongodb = { version = "2.6.1" , optional = true}
-uuid = { version = "1.4.1", features = ["v4", "js"]}
+uuid = { version = "1.4.1", features = ["v4", "js", "serde"]}
 
 [features]
 bcrypt = ["dep:bcrypt"]
