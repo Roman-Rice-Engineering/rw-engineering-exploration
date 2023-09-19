@@ -1,6 +1,7 @@
 use common::auth::{Person, User};
 use yew::{function_component, html, Html, use_state, use_effect_with_deps, platform::spawn_local};
-
+use crate::route::BlogRoute;
+use yew_router::prelude::Link;
 use crate::util::api_request::api_request;
 
 
@@ -69,6 +70,7 @@ pub fn Profile() -> Html{
         <div>
             {user_html}
             {person_html}
+            <Link<BlogRoute> to={BlogRoute::CreateBlog} classes="btn btn-secondary">{"Create blog"}</Link<BlogRoute>>
         </div>
     }
 }
