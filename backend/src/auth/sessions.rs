@@ -1,9 +1,11 @@
-use common::auth::User;
+use common::auth::{User, Person, person::PersonBackend};
 use rocket::http::{CookieJar, Cookie};
 use uuid::Uuid;
 use crate::env::IS_PRODUCTION;
 use serde::{Serialize, Deserialize};
 use mongodb::{bson, Collection};
+
+use super::user_collection::UserCollection;
 
 #[derive(Serialize, Deserialize)]
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -27,6 +29,15 @@ impl Session{
 
     pub fn get_user(self: &Self) -> &User {
         &self.user
+    }
+
+    pub async fn get_person_backend(self: &Self, users: &UserCollection, people: &Collection<PersonBackend>) -> Option<PersonBackend>{
+        let username = self.get_user().get_username();
+        let user = users.get_by_name(username).await?;
+        match people.find_one(bson::doc!{"_id": user.get_id()?}, None).await{
+            Ok(c) => c,
+            Err(_) => None
+        }
     }
 /*
     pub fn get_session_id(self: &Self) -> &Uuid{
