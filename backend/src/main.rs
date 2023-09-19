@@ -71,7 +71,7 @@ async fn create_people_collection(db_client: &Client) -> Result<mongodb::Collect
         .options(options)
         .build();
      match db_client.database("semi-public").collection::<PersonBackend>("people").create_index(model, None).await{
-        Ok(_) => Ok(db_client.database("auth").collection::<PersonBackend>("people")),
+        Ok(_) => Ok(db_client.database("semi-public").collection::<PersonBackend>("people")),
         Err(e) => Err(e)
     }
 }
