@@ -8,7 +8,7 @@ mod people;
 mod env;
 
 mod route;
-use route::{Route, AuthRoute, PeopleRoute};
+use route::{Route, AuthRoute, PeopleRoute, BlogRoute};
 
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -20,6 +20,14 @@ fn switch_auth(route: AuthRoute) -> Html {
         AuthRoute::Profile => html!{<auth::Profile />},
         AuthRoute::Signup => html!{<auth::Signup />},
         AuthRoute::NotFound => html!{<Redirect<Route> to={Route::NotFound}/>}
+    }
+}
+
+fn switch_blog(route: BlogRoute) -> Html {
+    match route{
+        BlogRoute::CreateBlog => html!{"Create blog!"},
+        BlogRoute::ViewBlog{ uuid } => html!{<>{"Viewing blog: "}{uuid}</>},
+        BlogRoute::NotFound => html!{<Redirect<Route> to={Route::NotFound}/>}
     }
 }
 
@@ -37,6 +45,7 @@ fn switch(route: Route) -> Html{
         Route::Projects | Route::ProjectsRoot => html!{"Projects Page!"},
         Route::People | Route::PeopleRoot => html!{<Switch<PeopleRoute> render={switch_people}/>},
         Route::Auth | Route::AuthRoot => html!{<Switch<AuthRoute> render={switch_auth}/>},
+        Route::Blog | Route::BlogRoot => html!{<Switch<BlogRoute> render={switch_blog}/>},
         Route::NotFound => html!{"Error 404"}
     };
     html!{

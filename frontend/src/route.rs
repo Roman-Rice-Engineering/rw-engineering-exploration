@@ -20,6 +20,24 @@ pub enum Route {
     #[at("/people/*")]
     People,
 
+    #[at("/blog")]
+    BlogRoot,
+    #[at("/blog/*")]
+    Blog,
+
+    #[not_found]
+    #[at("/404")]
+    NotFound,
+}
+
+#[derive(Clone, Routable, PartialEq)]
+pub enum BlogRoute{
+    #[at("/blog/create")]
+    CreateBlog,
+
+    #[at("/blog/view/:uuid")]
+    ViewBlog{ uuid: String },
+
     #[not_found]
     #[at("/404")]
     NotFound,
