@@ -9,6 +9,8 @@ use crate::auth::password::PasswordHashError;
 #[cfg(feature = "database")]
 use mongodb::bson::oid::ObjectId;
 
+use super::person::PersonBackend;
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 #[derive(Serialize, Deserialize)]
 pub struct User{
@@ -25,7 +27,7 @@ pub struct UserBackend{
     #[serde(rename = "_id")]
     #[serde(skip_serializing)]
     id: Option<ObjectId>, 
-    //person: Option<Person>
+    person: Option<ObjectId>
 }
 #[cfg(feature = "database")]
 impl UserBackend {
@@ -34,6 +36,10 @@ impl UserBackend {
     }
     pub fn put_id(self: &mut Self, id: ObjectId){
         self.id = Some(id);
+    }
+
+    pub fn put_person_backend(self: &mut Self, person: &PersonBackend){
+        self.person = person.get_id();
     }
     pub fn to_user(self: Self) -> User{
         User{
@@ -46,7 +52,7 @@ impl UserBackend {
         UserBackend{
             user,
             id: None,
-
+            person: None
         }
     }
 }

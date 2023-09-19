@@ -36,6 +36,10 @@ impl PersonBackend {
         })
     }
 
+    pub fn get_id(self: &Self) -> Option<ObjectId>{
+        self.id
+    }
+
     pub fn to_person(self: Self) -> Person{
         Person{
             uuid: self.person.uuid,
