@@ -49,7 +49,7 @@ pub fn People() -> Html{
 
 #[derive(Properties, Clone, PartialEq)]
 struct OnePersonProps{
-    person: Person
+    pub person: Person
 }
 
 #[function_component]
@@ -74,4 +74,41 @@ fn OnePerson(OnePersonProps { person }: &OnePersonProps) -> Html{
                 </div>
             </div>
     }
+}
+
+#[derive(Properties, Clone, PartialEq)]
+pub struct PeoplePersonProps{
+    pub uuid: String
+}
+
+#[function_component]
+pub fn PeoplePerson(PeoplePersonProps { uuid }: &PeoplePersonProps) -> Html{
+    let person = use_state(|| Option::<Person>::default());
+    {
+        let person = person.clone();
+        let path = "/people/".to_owned() + uuid;
+        use_effect_with_deps(move |_| {
+            spawn_local(async move {
+                let response_person = match api_request(&path, None).await{
+                    Ok(c) => c,
+                    Err(_) => return
+                };
+                let response_person = match serde_json::from_str::<Option<Person>>(&response_person){
+                    Ok(c) => c,
+                    Err(_) => return
+                };
+                person.set(response_person);
+            });
+        }, ());
+    }
+    match &*person {
+        None => html!{},
+        Some(person) => html!{
+            <div>
+                <p>{"This is name of person: "}{person.get_first_name()}</p>
+                <p>{"This is his uuid: "}{person.get_uuid().to_string()}</p>
+            </div>
+        }
+    }
+
 }
