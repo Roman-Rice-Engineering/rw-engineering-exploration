@@ -3,6 +3,9 @@ use auth::login;
 use auth::sessions::{ManySessions, Session};
 use auth::user_collection::UserCollection;
 use common::auth::person::PersonBackend;
+use common::models::blog::Blog;
+use common::models::component;
+use common::models::project::Project;
 use mongodb::bson::Bson;
 use mongodb::options::IndexOptions;
 use rocket::{get, routes};
@@ -26,11 +29,17 @@ async fn rocket() -> _ {
     let users = create_users_collection(&db_client).await.expect("unable to create unique index 'username'");
     let sessions = ManySessions::new(db_client.database("auth").collection::<mongodb::bson::Bson>("sessions"));
     let people = create_uuid_indexed_collection::<PersonBackend>(&db_client, "people").await.expect("unable to create people collection");
+    let blogs = create_uuid_indexed_collection::<Blog>(&db_client, "blogs").await.expect("unable to create blogs collection");
+    let projects = create_uuid_indexed_collection::<Project>(&db_client, "projects").await.expect("unable to create projects collection");
+    let components = create_uuid_indexed_collection::<component::Component>(&db_client, "components").await.expect("unable to create components collection");
 
     rocket::build()
         .manage(users)
         .manage(sessions)
         .manage(people)
+        .manage(blogs)
+        .manage(projects)
+        .manage(components)
         .mount("/auth", routes![
             index,
             signup::auth_signup_post,
