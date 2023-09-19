@@ -31,7 +31,18 @@ pub fn People() -> Html{
 
     }
 
-    people.deref().iter().map(|person| html!{<OnePerson person={person.clone()} />}).collect()
+    let people_html: Html = people.deref().iter().map(|person| html!{
+        <OnePerson person={person.clone()} />
+        
+    }).collect();
+
+    html!{
+        <div class="container">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 p-0 m-0">
+                {people_html} 
+            </div>
+        </div>
+    }
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -42,9 +53,23 @@ struct OnePersonProps{
 #[function_component]
 fn OnePerson(OnePersonProps { person }: &OnePersonProps) -> Html{
     html!{
-        <div>
-        <p>{person.get_first_name()}</p>
-        <p>{person.get_last_name()}</p>
-        </div>
+        <div class="col">
+            <div class="card shadow-sm">
+                <a href="/blog/{{blog.id}}" class="image-zoom-hover-wrapper">
+                    <img class="card-img-top image-zoom-hover" src="https://loremflickr.com/640/640" focusable="false" />
+                </a>
+                <div class="card-body">
+                    <p class="card-text">{person.get_first_name()}{" "}{person.get_last_name()}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <form method="post" action="#">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-primary">{"More Information"}</button>
+                            </div>
+                        </form>
+                        <small class="text-muted"></small>
+                    </div>
+                    </div>
+                </div>
+            </div>
     }
 }
