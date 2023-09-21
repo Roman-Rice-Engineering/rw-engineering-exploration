@@ -11,14 +11,10 @@ use crate::util::api_request::api_request;
 
 #[function_component]
 pub fn CreateBlog() -> Html{
-
-    let files = use_state(|| Vec::<(Vec<u8>, String)>::new());
-    let url_safe_base64_file_data = use_state(|| Vec::<String>::new());
+    let files = use_state(|| Vec::<(String, String)>::new());
     let files_cloned = files.clone();
-    let url_safe_base64_file_data_cloned = url_safe_base64_file_data.clone();
     let files_change = Callback::from(move |event: Event| {
         let files_cloned = files_cloned.clone();
-        let url_safe_base64_file_data_cloned = url_safe_base64_file_data.clone();
         let js_files = event
             .target()
             .unwrap()
@@ -26,34 +22,31 @@ pub fn CreateBlog() -> Html{
             .files()
             .unwrap();
         log!(js_files.clone());
-        let mut input_files: Vec<(Vec<u8>, String)> = Vec::new();
+        let mut input_files: Vec<(String, String)> = Vec::new();
         let closure = wasm_bindgen_futures::spawn_local(async move{
             for i in 0..js_files.length(){
                 let file = js_files.item(i).unwrap();
                 let file_value: Vec<u8> = js_sys::Uint8Array::new(&JsFuture::from(file.slice().unwrap().array_buffer()).await.unwrap()).to_vec();
-                let thing_as_string = STANDARD.encode(&file_value);
+                let file_value = STANDARD.encode(&file_value);
                 input_files.push((file_value, file.type_()));
             }
-            let input_files_as_url_safe_base64_file_data: Vec<String> = input_files.iter().map(|(binary, _)| STANDARD.encode(&binary)).collect();
-            url_safe_base64_file_data_cloned.set(input_files_as_url_safe_base64_file_data);
             files_cloned.set(input_files);
         });
     });
     
     let files_cloned = files.clone();
-    let view_images: Html = url_safe_base64_file_data_cloned.iter().map(|data: &String| base_64_to_html_image(data)).collect();
+    let view_images: Html = files_cloned.iter().map(|(data, datatype)| base_64_to_html_image(data)).collect();
     let onsubmit = Callback::from(move |event: SubmitEvent|{
         event.prevent_default();
         let files_cloned = files_cloned.clone(); 
         wasm_bindgen_futures::spawn_local(async move{
-            let as_base64: Vec<(String, String)> = files_cloned.clone().iter().map(|(binary, name)| (STANDARD.encode(binary), name.clone())).collect();
-            log!(serde_json::to_string_pretty(&as_base64).unwrap());
-            api_request("/blog/create/", Some(serde_json::to_string_pretty(&as_base64).unwrap())).await;
+            log!(serde_json::to_string_pretty(&files_cloned.deref()).unwrap());
+            api_request("/blog/create/", Some(serde_json::to_string_pretty(&files_cloned.deref()).unwrap())).await;
         });
     });
     
     html!{
-        <div class="container">
+        <div class="container-fluid">
             <form {onsubmit}>
                 <input type="file" multiple={true} onchange={files_change} />
                 {view_images.clone()}
