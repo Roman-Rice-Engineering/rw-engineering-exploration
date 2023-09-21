@@ -13,3 +13,5 @@ serde = { version = "1.0.188", features = ["derive"] }
 mongodb = "2.6.1"
 chrono = { version = "0.4.31", features = ["serde"] }
 uuid = { version = "1.4.1", features = ["v4", "serde"] }
+cloud-storage = "0.10"
+base64 = "0.21.4"

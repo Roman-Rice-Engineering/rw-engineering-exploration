@@ -2,44 +2,55 @@ use std::ops::Deref;
 use gloo::console::log;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
-use web_sys::{Event, HtmlTextAreaElement, HtmlInputElement, FileList, InputEvent};
+use web_sys::{Event, HtmlTextAreaElement, HtmlInputElement, FileList, InputEvent, SubmitEvent};
 use yew::{function_component, Html, html, use_state, Callback, AttrValue};
 use markdown::to_html_with_options;
+use base64::{engine::general_purpose::STANDARD, Engine};
 
+use crate::util::api_request::api_request;
 
 #[function_component]
 pub fn CreateBlog() -> Html{
 
-    let file = use_state(|| Option::<FileList>::default());
-    let file_cloned = file.clone();
-    let file_change = Callback::from(move |event: Event| {
-        let file_val = event
+    let files = use_state(|| Vec::<Vec<u8>>::new());
+    let files_cloned = files.clone();
+    let files_change = Callback::from(move |event: Event| {
+        let files_cloned = files_cloned.clone();
+        let js_files = event
             .target()
             .unwrap()
             .unchecked_into::<HtmlInputElement>()
-            .files();
-        file_cloned.set(file_val.clone());
-        log!(file_val.clone());
+            .files()
+            .unwrap();
+        let mut input_files: Vec<Vec<u8>> = Vec::new();
         let closure = wasm_bindgen_futures::spawn_local(async move{
-            let file = file_val.unwrap().item(0).unwrap();
-            log!(file.clone().slice().unwrap());
-            log!("now");
-            let value = js_sys::Uint8Array::new(&JsFuture::from(file.slice().unwrap().array_buffer()).await.unwrap()).to_vec();
-            log!(value.len());
-            let mut thing_as_string = "{".to_owned();
-            for val in value.clone(){
-            thing_as_string += ", ";
-            thing_as_string += &val.to_string();
+            for i in 0..js_files.length(){
+                let file = js_files.item(i).unwrap();
+                let file_value: Vec<u8> = js_sys::Uint8Array::new(&JsFuture::from(file.slice().unwrap().array_buffer()).await.unwrap()).to_vec();
+                let thing_as_string = STANDARD.encode(&file_value);
+                input_files.push(file_value);
             }
-            thing_as_string += "}";
-            let thing_as_string = String::from_utf8_lossy(&value).to_string();
-            log!(thing_as_string);
+            files_cloned.set(input_files);
         });
     });
-
+    
+    let files_cloned = files.clone();
+    let onsubmit = Callback::from(move |event: SubmitEvent|{
+        event.prevent_default();
+        let files_cloned = files_cloned.clone(); 
+        wasm_bindgen_futures::spawn_local(async move{
+            let as_base64: Vec<String> = files_cloned.clone().iter().map(|binary| STANDARD.encode(binary)).collect();
+            log!(serde_json::to_string_pretty(&as_base64).unwrap());
+            api_request("/blog/create/", Some(serde_json::to_string_pretty(&as_base64).unwrap())).await;
+        });
+    });
+    
     html!{
         <div class="container">
-            <input type="file" onchange={file_change} />
+            <form {onsubmit}>
+                <input type="file" multiple={true} onchange={files_change} />
+                <button type="submit">{"Submit"}</button>
+            </form>
             <MarkdownEditor />
         </div>
     }
