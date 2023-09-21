@@ -5,7 +5,7 @@ use wasm_bindgen_futures::JsFuture;
 use web_sys::{Event, HtmlTextAreaElement, HtmlInputElement, InputEvent, SubmitEvent};
 use yew::{function_component, Html, html, use_state, Callback};
 use base64::{engine::general_purpose::STANDARD, Engine};
-use crate::blog::{BlogPost, BlogPostProps};
+use crate::blog::BlogPost;
 
 use crate::util::api_request::api_request;
 
