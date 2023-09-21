@@ -80,12 +80,12 @@ fn MarkdownEditor() -> Html{
     let markdown_html = Html::from_html_unchecked(AttrValue::from(rendered_markdown.deref().clone()));
 
     html!{
-        <div class="row h-100">
+        <div class="row">
             <div class="col">
-                <textarea oninput={markdown_change} class="w-100" rows="100"/>
+                <textarea oninput={markdown_change} class="w-100" style="height: 100vh" />
             </div>
             <div class="col">
-                <div class="w-100 h-100 markdown-body p-4">
+                <div class="w-100 markdown-body p-4" style="overflow: scroll;height: 100vh;">
                     {markdown_html}
                 </div>
             </div>
