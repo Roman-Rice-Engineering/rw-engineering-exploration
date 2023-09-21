@@ -1,17 +1,17 @@
 use std::ops::Deref;
+use common::models::base64_files::Base64File;
 use gloo::console::log;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::{Event, HtmlTextAreaElement, HtmlInputElement, InputEvent, SubmitEvent};
 use yew::{function_component, Html, html, use_state, Callback};
-use base64::{engine::general_purpose::STANDARD, Engine};
 use crate::blog::BlogPost;
 
 use crate::util::api_request::api_request;
 
 #[function_component]
 pub fn CreateBlog() -> Html{
-    let files = use_state(|| Vec::<(String, String)>::new());
+    let files = use_state(|| Vec::<Base64File>::new());
     let files_cloned = files.clone();
     let files_change = Callback::from(move |event: Event| {
         let files_cloned = files_cloned.clone();
@@ -22,20 +22,19 @@ pub fn CreateBlog() -> Html{
             .files()
             .unwrap();
         log!(js_files.clone());
-        let mut input_files: Vec<(String, String)> = Vec::new();
+        let mut input_files: Vec<Base64File> = Vec::new();
         let closure = wasm_bindgen_futures::spawn_local(async move{
             for i in 0..js_files.length(){
                 let file = js_files.item(i).unwrap();
                 let file_value: Vec<u8> = js_sys::Uint8Array::new(&JsFuture::from(file.slice().unwrap().array_buffer()).await.unwrap()).to_vec();
-                let file_value = STANDARD.encode(&file_value);
-                input_files.push((file_value, file.type_()));
+                input_files.push(Base64File::new_from_vec_u8(&file_value, file.type_()));
             }
             files_cloned.set(input_files);
         });
     });
     
     let files_cloned = files.clone();
-    let view_images: Html = files_cloned.iter().map(|(data, datatype)| base_64_to_html_image(data)).collect();
+    let view_images: Html = files_cloned.iter().map(|file| base_64_to_html_image(file.get_data_base64_str())).collect();
     let onsubmit = Callback::from(move |event: SubmitEvent|{
         event.prevent_default();
         let files_cloned = files_cloned.clone(); 
