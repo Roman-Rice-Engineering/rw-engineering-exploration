@@ -696,6 +696,7 @@ dependencies = [
  "gloo-net 0.4.0",
  "js-sys",
  "markdown",
+ "regex",
  "serde_json",
  "wasm-bindgen",
  "wasm-bindgen-futures",

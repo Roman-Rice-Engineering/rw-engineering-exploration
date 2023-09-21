@@ -9,6 +9,8 @@ use crate::blog::BlogPost;
 
 use crate::util::api_request::api_request;
 
+use super::BlogPostProps;
+
 #[function_component]
 pub fn CreateBlog() -> Html{
     let files = use_state(|| Vec::<Base64File>::new());
@@ -51,13 +53,13 @@ pub fn CreateBlog() -> Html{
                 {view_images.clone()}
                 <button type="submit">{"Submit"}</button>
             </form>
-            <MarkdownEditor />
+            <MarkdownEditor markdown={"".to_owned()} files={files.deref().to_vec()}/>
         </div>
     }
 }
 
 #[function_component]
-fn MarkdownEditor() -> Html{
+fn MarkdownEditor(BlogPostProps { files, ..}: &BlogPostProps) -> Html{
     let plain_markdown = use_state(|| String::new());
     let plain_markdown_cloned = plain_markdown.clone();
     let markdown_change = Callback::from(move |event: InputEvent| {
@@ -76,7 +78,7 @@ fn MarkdownEditor() -> Html{
                 <textarea oninput={markdown_change} class="w-100" style="height: 100vh" />
             </div>
             <div class="col">
-                <BlogPost markdown={plain_markdown.deref().clone()} />
+                <BlogPost markdown={plain_markdown.deref().clone()} files={files.deref().to_vec()}/>
             </div>
         </div>
     }
