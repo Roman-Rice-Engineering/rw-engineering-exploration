@@ -3,9 +3,9 @@ use gloo::console::log;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::{Event, HtmlTextAreaElement, HtmlInputElement, InputEvent, SubmitEvent};
-use yew::{function_component, Html, html, use_state, Callback, AttrValue};
-use markdown::to_html_with_options;
+use yew::{function_component, Html, html, use_state, Callback};
 use base64::{engine::general_purpose::STANDARD, Engine};
+use crate::blog::{BlogPost, BlogPostProps};
 
 use crate::util::api_request::api_request;
 
@@ -60,24 +60,16 @@ pub fn CreateBlog() -> Html{
 #[function_component]
 fn MarkdownEditor() -> Html{
     let plain_markdown = use_state(|| String::new());
-    let rendered_markdown = use_state(|| String::new());
-
     let plain_markdown_cloned = plain_markdown.clone();
-    let rendered_markdown_cloned = rendered_markdown.clone();
     let markdown_change = Callback::from(move |event: InputEvent| {
         let markdown = event
             .target()
             .unwrap()
             .unchecked_into::<HtmlTextAreaElement>()
             .value();
-        rendered_markdown_cloned.set(match to_html_with_options(&markdown, &markdown::Options::gfm()){
-            Err(e) => format!("Error: {e}"),
-            Ok(c)=> c
-        });
         plain_markdown_cloned.set(markdown);
-
     });
-    let markdown_html = Html::from_html_unchecked(AttrValue::from(rendered_markdown.deref().clone()));
+
 
     html!{
         <div class="row">
@@ -85,9 +77,7 @@ fn MarkdownEditor() -> Html{
                 <textarea oninput={markdown_change} class="w-100" style="height: 100vh" />
             </div>
             <div class="col">
-                <div class="w-100 markdown-body p-4" style="overflow: scroll;height: 100vh;">
-                    {markdown_html}
-                </div>
+                <BlogPost markdown={plain_markdown.deref().clone()} />
             </div>
         </div>
     }
