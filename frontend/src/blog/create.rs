@@ -1,9 +1,10 @@
 use std::ops::Deref;
 use common::models::base64_files::Base64File;
+use common::models::blog;
 use gloo::console::log;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
-use web_sys::{Event, HtmlTextAreaElement, HtmlInputElement, InputEvent, SubmitEvent};
+use web_sys::{Event, HtmlTextAreaElement, HtmlInputElement, InputEvent, SubmitEvent, MouseEvent};
 use yew::{function_component, Html, html, use_state, Callback};
 use crate::blog::BlogPost;
 
@@ -36,23 +37,17 @@ pub fn CreateBlog() -> Html{
     });
     
     let files_cloned = files.clone();
-    let view_images: Html = files_cloned.iter().map(|file| base_64_to_html_image(file.get_data_base64_str())).collect();
+    let view_images: Html = files_cloned.iter().map(|file| base_64_to_html_image(file.get_data_base64_str())).collect(); 
+    
     let onsubmit = Callback::from(move |event: SubmitEvent|{
         event.prevent_default();
-        let files_cloned = files_cloned.clone(); 
-        wasm_bindgen_futures::spawn_local(async move{
-            log!(serde_json::to_string_pretty(&files_cloned.deref()).unwrap());
-            api_request("/blog/create/", Some(serde_json::to_string_pretty(&files_cloned.deref()).unwrap())).await;
-        });
     });
-    
     html!{
         <div class="container-fluid">
-            <form {onsubmit}>
+            <div class="p-3">
                 <input type="file" multiple={true} onchange={files_change} />
                 {view_images.clone()}
-                <button type="submit">{"Submit"}</button>
-            </form>
+            </div>
             <MarkdownEditor markdown={"".to_owned()} files={files.deref().to_vec()}/>
         </div>
     }
@@ -70,9 +65,22 @@ fn MarkdownEditor(BlogPostProps { files, ..}: &BlogPostProps) -> Html{
             .value();
         plain_markdown_cloned.set(markdown);
     });
+    let files_cloned = files.clone();
+    let plain_markdown_cloned = plain_markdown.clone();
+    let onclick = Callback::from(move |event: MouseEvent|{
+        let files_cloned = files_cloned.clone();
+        let plain_markdown_cloned = plain_markdown_cloned.clone();
+        wasm_bindgen_futures::spawn_local(async move{
+            api_request("/blog/create/", Some(serde_json::to_string_pretty(
+                &common::models::base64_files::BlogPost::new(files_cloned.deref().to_owned(), plain_markdown_cloned.deref().to_owned())
+            ).unwrap())).await;
+        });
+    });
 
 
     html!{
+        <>
+        <button class="btn btn-primary m-3 p-2" {onclick}>{"Submit"}</button>
         <div class="row">
             <div class="col">
                 <textarea oninput={markdown_change} class="w-100" style="height: 100vh" />
@@ -81,6 +89,7 @@ fn MarkdownEditor(BlogPostProps { files, ..}: &BlogPostProps) -> Html{
                 <BlogPost markdown={plain_markdown.deref().clone()} files={files.deref().to_vec()}/>
             </div>
         </div>
+        </>
     }
 }
 

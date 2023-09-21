@@ -8,11 +8,13 @@ use common::models::component;
 use common::models::project::Project;
 use mongodb::bson::Bson;
 use mongodb::options::IndexOptions;
+use rocket::data::ToByteUnit;
 use rocket::{get, routes};
 mod auth;
 use crate::auth::{signup, logout, profile};
 use mongodb::{Client, IndexModel};
 mod people;
+mod blog;
 
 
 #[get("/hello")]
@@ -33,7 +35,10 @@ async fn rocket() -> _ {
     let projects = create_uuid_indexed_collection::<Project>(&db_client, "projects").await.expect("unable to create projects collection");
     let components = create_uuid_indexed_collection::<component::Component>(&db_client, "components").await.expect("unable to create components collection");
 
-    rocket::build()
+    let custom_rocket = rocket::data::Limits::default().limit("string", 64.mebibytes());
+    let custom_rocket = rocket::Config::figment()
+        .merge(("limits", custom_rocket));
+    rocket::custom(custom_rocket)
         .manage(users)
         .manage(sessions)
         .manage(people)
@@ -53,7 +58,7 @@ async fn rocket() -> _ {
         .mount("/people", routes![
         people::people_index,
         people::people_person
-    ])
+    ]).mount("/blog", routes![crate::blog::create_blog_post])
 }
 
 async fn create_users_collection(db_client: &Client) -> Result<UserCollection, mongodb::error::Error>{

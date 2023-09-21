@@ -5,41 +5,85 @@ use base64::{engine::general_purpose::STANDARD, Engine};
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 #[derive(Serialize, Deserialize)]
-pub struct Base64File{
+pub struct BlogPost{
+    files: Vec<Base64File>,
+    markdown: String
+}
+
+impl BlogPost {
+   pub fn new(files: Vec<Base64File>, markdown: String) -> BlogPost {   
+        BlogPost{
+            files,
+            markdown,
+        }
+    }
+
+    pub fn get_files(self: &Self) -> &[Base64File]{
+        &self.files
+    }
+
+    pub fn get_markdown(self: &Self) -> &str {
+        &self.markdown
+    }
+}
+
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Serialize, Deserialize)]
+pub enum Base64File{
+    Single{
     data: String,
     name: String
+    },
+    Nested{
+    files: Vec<Base64File>, 
+    data: String,
+    name: String
+    }
 }
 
 impl Base64File {
     pub fn new_from_base64_string(data: String, name: String) -> Base64File{
-        Base64File{
+        Base64File::Single{
             data,
             name
         }
     }
 
     pub fn new_from_vec_u8(data: &[u8], name: String) -> Base64File{
-        Base64File{
+        Base64File::Single{
             data: STANDARD.encode(data),
             name
         }
     }
 
     pub fn is_valid(self: &Self) -> bool{
-        match STANDARD.decode(self.data.deref()){
+        match STANDARD.decode(match self{
+            Base64File::Single { data, .. } => data.deref(),
+            Base64File::Nested { data, .. } => data.deref()
+        }){
             Ok(_) => true,
             Err(_) => false
         }
     }
 
     pub fn get_data_base64_str(self: &Self) -> &str{
-        &self.data
+        match self{
+            Base64File::Single { data, .. } => &data,
+            Base64File::Nested { data, .. } => &data
+        }
     }
     pub fn get_data_vec_u8(self: &Self) -> Result<Vec<u8>, base64::DecodeError>{
-        STANDARD.decode(self.data.deref())
+        STANDARD.decode(match self{
+            Base64File::Single { data, .. } => data.deref(),
+            Base64File::Nested { data, .. } => data.deref()
+        })
     }
     pub fn get_name(self: &Self) -> &str{
-        &self.name
+        match self{
+            Base64File::Single { name, .. } => &name,
+            Base64File::Nested { name, .. } => name
+        }
     }
 
 
