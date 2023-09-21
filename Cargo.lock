@@ -631,6 +631,7 @@ dependencies = [
  "common",
  "gloo 0.10.0",
  "gloo-net 0.4.0",
+ "js-sys",
  "markdown",
  "serde_json",
  "wasm-bindgen",

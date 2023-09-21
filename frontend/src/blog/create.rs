@@ -1,7 +1,7 @@
 use std::ops::Deref;
-
 use gloo::console::log;
 use wasm_bindgen::JsCast;
+use wasm_bindgen_futures::JsFuture;
 use web_sys::{Event, HtmlTextAreaElement, HtmlInputElement, FileList, InputEvent};
 use yew::{function_component, Html, html, use_state, Callback, AttrValue};
 use markdown::to_html_with_options;
@@ -19,7 +19,22 @@ pub fn CreateBlog() -> Html{
             .unchecked_into::<HtmlInputElement>()
             .files();
         file_cloned.set(file_val.clone());
-        log!(file_val);
+        log!(file_val.clone());
+        let closure = wasm_bindgen_futures::spawn_local(async move{
+            let file = file_val.unwrap().item(0).unwrap();
+            log!(file.clone().slice().unwrap());
+            log!("now");
+            let value = js_sys::Uint8Array::new(&JsFuture::from(file.slice().unwrap().array_buffer()).await.unwrap()).to_vec();
+            log!(value.len());
+            let mut thing_as_string = "{".to_owned();
+            for val in value.clone(){
+            thing_as_string += ", ";
+            thing_as_string += &val.to_string();
+            }
+            thing_as_string += "}";
+            let thing_as_string = String::from_utf8_lossy(&value).to_string();
+            log!(thing_as_string);
+        });
     });
 
     html!{
