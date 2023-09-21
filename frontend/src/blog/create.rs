@@ -85,7 +85,7 @@ fn MarkdownEditor() -> Html{
                 <textarea oninput={markdown_change} class="w-100" rows="100"/>
             </div>
             <div class="col">
-                <div class="w-100 h-100 markdown-body">
+                <div class="w-100 h-100 markdown-body p-4">
                     {markdown_html}
                 </div>
             </div>
