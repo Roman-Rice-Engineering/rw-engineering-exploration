@@ -2,7 +2,7 @@ use std::ops::Deref;
 use gloo::console::log;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
-use web_sys::{Event, HtmlTextAreaElement, HtmlInputElement, FileList, InputEvent, SubmitEvent};
+use web_sys::{Event, HtmlTextAreaElement, HtmlInputElement, InputEvent, SubmitEvent};
 use yew::{function_component, Html, html, use_state, Callback, AttrValue};
 use markdown::to_html_with_options;
 use base64::{engine::general_purpose::STANDARD, Engine};
@@ -12,34 +12,41 @@ use crate::util::api_request::api_request;
 #[function_component]
 pub fn CreateBlog() -> Html{
 
-    let files = use_state(|| Vec::<Vec<u8>>::new());
+    let files = use_state(|| Vec::<(Vec<u8>, String)>::new());
+    let url_safe_base64_file_data = use_state(|| Vec::<String>::new());
     let files_cloned = files.clone();
+    let url_safe_base64_file_data_cloned = url_safe_base64_file_data.clone();
     let files_change = Callback::from(move |event: Event| {
         let files_cloned = files_cloned.clone();
+        let url_safe_base64_file_data_cloned = url_safe_base64_file_data.clone();
         let js_files = event
             .target()
             .unwrap()
             .unchecked_into::<HtmlInputElement>()
             .files()
             .unwrap();
-        let mut input_files: Vec<Vec<u8>> = Vec::new();
+        log!(js_files.clone());
+        let mut input_files: Vec<(Vec<u8>, String)> = Vec::new();
         let closure = wasm_bindgen_futures::spawn_local(async move{
             for i in 0..js_files.length(){
                 let file = js_files.item(i).unwrap();
                 let file_value: Vec<u8> = js_sys::Uint8Array::new(&JsFuture::from(file.slice().unwrap().array_buffer()).await.unwrap()).to_vec();
                 let thing_as_string = STANDARD.encode(&file_value);
-                input_files.push(file_value);
+                input_files.push((file_value, file.type_()));
             }
+            let input_files_as_url_safe_base64_file_data: Vec<String> = input_files.iter().map(|(binary, _)| STANDARD.encode(&binary)).collect();
+            url_safe_base64_file_data_cloned.set(input_files_as_url_safe_base64_file_data);
             files_cloned.set(input_files);
         });
     });
     
     let files_cloned = files.clone();
+    let view_images: Html = url_safe_base64_file_data_cloned.iter().map(|data: &String| base_64_to_html_image(data)).collect();
     let onsubmit = Callback::from(move |event: SubmitEvent|{
         event.prevent_default();
         let files_cloned = files_cloned.clone(); 
         wasm_bindgen_futures::spawn_local(async move{
-            let as_base64: Vec<String> = files_cloned.clone().iter().map(|binary| STANDARD.encode(binary)).collect();
+            let as_base64: Vec<(String, String)> = files_cloned.clone().iter().map(|(binary, name)| (STANDARD.encode(binary), name.clone())).collect();
             log!(serde_json::to_string_pretty(&as_base64).unwrap());
             api_request("/blog/create/", Some(serde_json::to_string_pretty(&as_base64).unwrap())).await;
         });
@@ -49,6 +56,7 @@ pub fn CreateBlog() -> Html{
         <div class="container">
             <form {onsubmit}>
                 <input type="file" multiple={true} onchange={files_change} />
+                {view_images.clone()}
                 <button type="submit">{"Submit"}</button>
             </form>
             <MarkdownEditor />
@@ -91,4 +99,15 @@ fn MarkdownEditor() -> Html{
             </div>
         </div>
     }
+}
+
+fn base_64_to_html_image(image_as_base64: &str) -> Html{
+     html!{
+         <img style="
+         height: 100px;
+         width: 100px;
+         object-fit: cover;"
+         src={
+         "data:image/png;base64,".to_owned() + image_as_base64
+         }/>}
 }
