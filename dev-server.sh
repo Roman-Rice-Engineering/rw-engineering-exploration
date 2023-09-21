@@ -49,7 +49,7 @@ docker run \
 	-e "API_URL=http://localhost:7000/api/" \
 	-e "IS_PRODUCTION=false" \
 	-e "STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME}" \
-	-e "SERVICE_ACCOUNT_JSON=/cloud_storage_json/$(basename ${SERVICE_ACCOUNT_JSON})" \
+	-e "SERVICE_ACCOUNT=/cloud_storage_json/$(basename ${SERVICE_ACCOUNT_JSON})" \
 	-v $(dirname $(realpath ${SERVICE_ACCOUNT_JSON})):/cloud_storage_json \
 	--network $NETWORK_NAME -p 7000:80 -it --rm --name $DEV_SERVER_CONTAINER_NAME $DEV_SERVER_IMAGE_NAME
 

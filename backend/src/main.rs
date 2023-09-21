@@ -25,6 +25,8 @@ fn index(_session: Session) -> String{
 
 #[rocket::launch]
 async fn rocket() -> _ {
+
+    let cloud_storage = cloud_storage::Client::default();
     
     let db_uri = std::env::var("DB_URI").expect("unable to find 'DB_URI' env variable");
     let db_client = Client::with_uri_str(db_uri).await.expect("unable to connect to database");
@@ -45,6 +47,7 @@ async fn rocket() -> _ {
         .manage(blogs)
         .manage(projects)
         .manage(components)
+        .manage(cloud_storage)
         .mount("/auth", routes![
             index,
             signup::auth_signup_post,
