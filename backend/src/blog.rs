@@ -1,10 +1,31 @@
 use base64::Engine;
 use common::{models::{base64_files::BlogPost, blog::Blog}, auth::person::PersonBackend};
-use mongodb::{Collection, bson::{doc, Bson, Document, Binary}, bson};
+use mongodb::{Collection, bson::{doc, Bson, Document, Binary, SerializerOptions}, bson};
 use rocket::{post, State};
+use uuid::Uuid;
 
 use crate::{auth::{sessions::Session, user_collection::UserCollection}, env::STORAGE_BUCKET_NAME};
 
+
+#[post("/get/<uuid>")]
+pub async fn get_blog_post(uuid: String, blogs: &State<Collection<Blog>> ) -> Option<String>{
+    let uuid = match Uuid::parse_str(&uuid) {
+        Ok(c) => c,
+        Err(_) => return None
+    };
+    let uuid = match mongodb::bson::ser::to_bson_with_options(&uuid, SerializerOptions::builder().human_readable(false).build()){
+        Ok(c) => c,
+        Err(_) => return None
+    };
+    let blog_post = match blogs.find_one(doc!{"uuid": &uuid}, None).await{
+        Ok(c) => c,
+        Err(e) => {
+            println!("{}{e}", doc!{"uuid": &uuid});
+            return None;
+        }
+    }; 
+    match serde_json::to_string(&blog_post){Ok(c) => Some(c), Err(_) => None}
+}
 
 #[post("/create", data = "<data>")]
 pub async fn create_blog_post(

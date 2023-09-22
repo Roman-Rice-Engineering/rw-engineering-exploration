@@ -61,7 +61,7 @@ async fn rocket() -> _ {
         .mount("/people", routes![
         people::people_index,
         people::people_person
-    ]).mount("/blog", routes![crate::blog::create_blog_post])
+    ]).mount("/blog", routes![crate::blog::create_blog_post, crate::blog::get_blog_post])
 }
 
 async fn create_users_collection(db_client: &Client) -> Result<UserCollection, mongodb::error::Error>{
@@ -80,17 +80,17 @@ async fn create_users_collection(db_client: &Client) -> Result<UserCollection, m
 }
 
 async fn create_uuid_indexed_collection<T>(db_client: &Client, name: &str) -> Result<mongodb::Collection<T>, mongodb::error::Error>{
-    let options = IndexOptions::builder()
+    /*let options = IndexOptions::builder()
         .unique(true)
         .name("uuid".to_owned())
         .build();
     let model = IndexModel::builder()
         .keys(mongodb::bson::doc!{"uuid": "text"})
         .options(options)
-        .build();
-     match db_client.database("semi-public").collection::<T>(&name).create_index(model, None).await{
+        .build();*/
+     Ok(db_client.database("semi-public").collection::<T>(&name))/*.create_index(model, None).await{
         Ok(_) => Ok(db_client.database("semi-public").collection::<T>(&name)),
         Err(e) => Err(e)
-    }
+    }*/
 }
 
