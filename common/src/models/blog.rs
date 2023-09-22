@@ -14,8 +14,8 @@ pub struct Blog{
     // Blog contents
     title: String,
     creation_date: chrono::DateTime<Utc>, 
-    markdown: String,
-    contents: Vec<String>,
+    markdown: Uuid,
+    contents: Vec<Uuid>,
 }
 
 impl Blog {
@@ -24,8 +24,8 @@ impl Blog {
         person: Uuid,
         project: Option<Uuid>,
         component: Option<Uuid>,
-        markdown: String,
-        contents: Vec<String>
+        markdown: Uuid,
+        contents: Vec<Uuid>
     ) -> Blog{
         Blog{
             uuid,
