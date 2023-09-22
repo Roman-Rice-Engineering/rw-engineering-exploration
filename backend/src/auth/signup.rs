@@ -47,7 +47,7 @@ pub async fn auth_signup_post(data: String, people: &State<mongodb::Collection<P
 
     user.put_id(user_oid);
     
-    let person = PersonBackend::new("Placeholder".to_owned(), "Person".to_owned(), user).unwrap();
+    let person = PersonBackend::new(user.user.get_username().to_owned(), "".to_owned(), user).unwrap();
 
     let person_id = match people.insert_one(person, None).await {
         Ok(c) => c.inserted_id.as_object_id(),
