@@ -49,10 +49,19 @@ pub async fn create_blog_post(
         Err(_) => return failure_message
     };
     let files = data.get_files().clone();
+    let mut files_processed = Vec::<Uuid>::new();
+    for file in files{
+        let file_uuid = Uuid::new_v4();
+        cloud.object().create(STORAGE_BUCKET_NAME, 
+            match file.get_data_vec_u8(){Ok(c) => c, Err(_) => return failure_message},
+            &file_uuid.to_string(),
+            file.get_name()).await;
+        files_processed.push(file_uuid);
+    }
     
     let md_file = data.get_markdown().to_owned().as_bytes().to_vec();
     let md_uuid = uuid::Uuid::new_v4();
-    let md_result = match cloud.object().create(STORAGE_BUCKET_NAME, md_file, &md_uuid.to_string(), "text/markdown").await{
+    let _md_result = match cloud.object().create(STORAGE_BUCKET_NAME, md_file, &md_uuid.to_string(), "text/markdown").await{
             Ok(c) => c,
             Err(e) => {println!("{}", e);return failure_message;}
         };
@@ -85,9 +94,15 @@ pub async fn create_blog_post(
     );
 
     let new_blog_result = match blogs.insert_one(new_db_blog, None).await{
-        Ok(c) => c,
+        Ok(c) => c.inserted_id.as_object_id().unwrap(),
         Err(_) => return failure_message
     };
+    let query = doc! {"_id": new_blog_result};
+    for file in files_processed{
+        let update = doc! {"$push": {"contents": Binary::from_base64(base64::engine::general_purpose::STANDARD.encode(file), None).unwrap()}};
+        blogs.update_one(query.clone(), update, None).await;
+          
+    }
         
     failure_message
 }
