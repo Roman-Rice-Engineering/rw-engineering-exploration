@@ -6,7 +6,7 @@ use wasm_bindgen_futures::spawn_local;
 use yew::{function_component, Html, html, use_effect_with_deps, use_state};
 use yew::Properties;
 
-use crate::route::PeopleRoute;
+use crate::route::{PeopleRoute, BlogRoute};
 use crate::util::api_request::api_request;
 
 
@@ -104,7 +104,9 @@ pub fn PeoplePerson(PeoplePersonProps { uuid }: &PeoplePersonProps) -> Html{
     match &*person {
         None => html!{},
         Some(person) => {
-        let blog_post_html: Html = person.get_blogs().iter().map(|blog| html!{<p>{"Blog post:  "}{blog.to_string()}</p>}).collect();
+        let blog_post_html: Html = person.get_blogs().iter().map(|blog| html!{
+            <p><Link<BlogRoute> to={BlogRoute::ViewBlog { uuid: blog.to_string() }}>{"Blog post:  "}{blog.to_string()}</Link<BlogRoute>></p>
+        }).collect();
         html!{
             <div>
                 <p>{"This is name of person: "}{person.get_first_name()}</p>
