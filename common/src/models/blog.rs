@@ -43,4 +43,7 @@ impl Blog {
     pub fn get_markdown(self: &Self) -> Uuid{
         self.markdown
     }
+    pub fn into_contents(self: Self) -> Vec<Uuid>{
+        self.contents
+    }
 }

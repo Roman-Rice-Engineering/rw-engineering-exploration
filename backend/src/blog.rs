@@ -28,9 +28,31 @@ pub async fn get_blog_post(uuid: String, blogs: &State<Collection<Blog>>, cloud:
             return None;
         }
     }; 
-    let blog_post = match cloud.object().download(STORAGE_BUCKET_NAME, &blog_post.get_markdown().to_string()).await{Err(_) => return None, Ok(c) => c};
-    let blog_post = Base64File::new_from_vec_u8(&blog_post, "text/markdown".to_owned());
-    match serde_json::to_string(&blog_post){Ok(c) => Some(c), Err(_) => None}
+    let markdown = match cloud.object().download(STORAGE_BUCKET_NAME, &blog_post.get_markdown().to_string()).await{Err(_) => return None, Ok(c) => c};
+    let markdown = match String::from_utf8(markdown){Err(_)=>"".to_owned(), Ok(c)=>c};
+    let mut files = Vec::<Base64File>::new();
+    for file_getter in blog_post.into_contents(){
+        let name = match cloud.object().read(STORAGE_BUCKET_NAME, &file_getter.to_string()).await{
+            Err(_) => continue,
+            Ok(c) => c
+        };
+        let name = match name.content_type{
+            Some(c) => c,
+            None => String::default()
+        };
+        let file = match cloud.object().download(STORAGE_BUCKET_NAME, &file_getter.to_string()).await{
+            Err(_) => continue,
+            Ok(c) => c
+        };
+        let file = Base64File::new_from_vec_u8(&file, name);
+        files.push(file);
+    }
+    let to_ret = BlogPost::new(files, markdown);
+    let to_ret = match serde_json::to_string(&to_ret){
+        Err(_) => return None,
+        Ok(c) => c
+    };
+    Some(to_ret)
 }
 
 #[post("/create", data = "<data>")]
