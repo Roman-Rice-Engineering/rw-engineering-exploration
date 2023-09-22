@@ -78,4 +78,7 @@ impl Person{
             uuid: uuid::Uuid::new_v4(),
         }
     }
+    pub fn get_blogs(self: &Self) -> &[Uuid]{
+        &self.blogs
+    }
 }

@@ -103,11 +103,15 @@ pub fn PeoplePerson(PeoplePersonProps { uuid }: &PeoplePersonProps) -> Html{
     }
     match &*person {
         None => html!{},
-        Some(person) => html!{
+        Some(person) => {
+        let blog_post_html: Html = person.get_blogs().iter().map(|blog| html!{<p>{"Blog post:  "}{blog.to_string()}</p>}).collect();
+        html!{
             <div>
                 <p>{"This is name of person: "}{person.get_first_name()}</p>
                 <p>{"This is his uuid: "}{person.get_uuid().to_string()}</p>
+                {blog_post_html}
             </div>
+        }
         }
     }
 
