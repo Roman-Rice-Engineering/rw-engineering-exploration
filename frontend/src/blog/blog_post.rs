@@ -36,7 +36,7 @@ pub fn BlogPost( BlogPostProps { markdown, files}: &BlogPostProps ) -> Html{
     let markdown: Html = Html::from_html_unchecked(AttrValue::from(markdown));
 
     html!{
-        <div class="w-100 markdown-body p-4" style="overflow: scroll;height: 100vh;">
+        <div class="w-100 markdown-body p-4">
             {markdown}
         </div>
     }

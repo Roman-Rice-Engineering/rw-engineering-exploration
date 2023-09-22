@@ -1,5 +1,6 @@
 use base64::Engine;
-use common::{models::{base64_files::BlogPost, blog::Blog}, auth::person::PersonBackend};
+use cloud_storage::Client;
+use common::{models::{base64_files::{BlogPost, Base64File}, blog::Blog}, auth::person::PersonBackend};
 use mongodb::{Collection, bson::{doc, Bson, Document, Binary, SerializerOptions}, bson};
 use rocket::{post, State};
 use uuid::Uuid;
@@ -8,7 +9,7 @@ use crate::{auth::{sessions::Session, user_collection::UserCollection}, env::STO
 
 
 #[post("/get/<uuid>")]
-pub async fn get_blog_post(uuid: String, blogs: &State<Collection<Blog>> ) -> Option<String>{
+pub async fn get_blog_post(uuid: String, blogs: &State<Collection<Blog>>, cloud: &State<Client>) -> Option<String>{
     let uuid = match Uuid::parse_str(&uuid) {
         Ok(c) => c,
         Err(_) => return None
@@ -18,12 +19,17 @@ pub async fn get_blog_post(uuid: String, blogs: &State<Collection<Blog>> ) -> Op
         Err(_) => return None
     };
     let blog_post = match blogs.find_one(doc!{"uuid": &uuid}, None).await{
-        Ok(c) => c,
+        Ok(c) => match c{
+            Some(c) => c,
+            None => return None
+        },
         Err(e) => {
             println!("{}{e}", doc!{"uuid": &uuid});
             return None;
         }
     }; 
+    let blog_post = match cloud.object().download(STORAGE_BUCKET_NAME, &blog_post.get_markdown().to_string()).await{Err(_) => return None, Ok(c) => c};
+    let blog_post = Base64File::new_from_vec_u8(&blog_post, "text/markdown".to_owned());
     match serde_json::to_string(&blog_post){Ok(c) => Some(c), Err(_) => None}
 }
 

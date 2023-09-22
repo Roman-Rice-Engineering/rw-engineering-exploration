@@ -85,7 +85,7 @@ fn MarkdownEditor(BlogPostProps { files, ..}: &BlogPostProps) -> Html{
             <div class="col">
                 <textarea oninput={markdown_change} class="w-100" style="height: 100vh" />
             </div>
-            <div class="col">
+            <div class="col" style="overflow: scroll;height: 100vh;">
                 <BlogPost markdown={plain_markdown.deref().clone()} files={files.deref().to_vec()}/>
             </div>
         </div>

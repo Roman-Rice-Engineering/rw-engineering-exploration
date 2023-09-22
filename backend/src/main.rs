@@ -2,10 +2,12 @@ mod env;
 use auth::login;
 use auth::sessions::{ManySessions, Session};
 use auth::user_collection::UserCollection;
+use cloud_storage::bucket::Cors;
 use common::auth::person::PersonBackend;
 use common::models::blog::Blog;
 use common::models::component;
 use common::models::project::Project;
+use env::STORAGE_BUCKET_NAME;
 use mongodb::bson::Bson;
 use mongodb::options::IndexOptions;
 use rocket::data::ToByteUnit;
@@ -27,7 +29,7 @@ fn index(_session: Session) -> String{
 async fn rocket() -> _ {
 
     let cloud_storage = cloud_storage::Client::default();
-    
+        
     let db_uri = std::env::var("DB_URI").expect("unable to find 'DB_URI' env variable");
     let db_client = Client::with_uri_str(db_uri).await.expect("unable to connect to database");
     let users = create_users_collection(&db_client).await.expect("unable to create unique index 'username'");

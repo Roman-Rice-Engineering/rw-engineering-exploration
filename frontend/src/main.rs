@@ -1,4 +1,5 @@
 mod navbar;
+use blog::view_blog::ViewBlog;
 use navbar::MainNav;
 mod util;
 
@@ -27,7 +28,7 @@ fn switch_auth(route: AuthRoute) -> Html {
 fn switch_blog(route: BlogRoute) -> Html {
     match route{
         BlogRoute::CreateBlog => html!{<blog::create::CreateBlog />},
-        BlogRoute::ViewBlog{ uuid } => html!{<>{"Viewing blog: "}{uuid}</>},
+        BlogRoute::ViewBlog{ uuid } => html!{<ViewBlog {uuid} />},
         BlogRoute::NotFound => html!{<Redirect<Route> to={Route::NotFound}/>}
     }
 }

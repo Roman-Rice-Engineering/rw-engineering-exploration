@@ -39,4 +39,8 @@ impl Blog {
         }
 
     }
+
+    pub fn get_markdown(self: &Self) -> Uuid{
+        self.markdown
+    }
 }
