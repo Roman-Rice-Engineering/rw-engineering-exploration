@@ -6,6 +6,8 @@ use crate::auth::sessions::Session;
 
 use super::{user_collection::UserCollection, sessions::ManySessions};
 
+static mut AT_LIMIT: bool = false;
+
 
 // If user is signed in go to a failure message telling them that they need to log out before
 // creating a new user
@@ -22,6 +24,10 @@ pub fn redirect(_session: Session) -> String{
 pub async fn auth_signup_post(data: String, people: &State<mongodb::Collection<PersonBackend>>, users: &State<UserCollection>, sessions: &State<ManySessions>, cookies: &CookieJar<'_>) -> String{
 
     let failure_message = serde_json::to_string(&DisplayState::Failure { message: "failed to create user".to_string() }).unwrap().to_string();
+    unsafe{
+    if AT_LIMIT {return failure_message};
+    AT_LIMIT = true;
+    }
 
     let mut user: User = match serde_json::from_str(&data) {
         Ok(value) => value,
