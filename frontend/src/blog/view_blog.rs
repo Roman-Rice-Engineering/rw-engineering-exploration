@@ -4,7 +4,7 @@ use common::models::{blog::Blog, base64_files::{Base64File, BlogPost}};
 use gloo_net::http::Request;
 use yew::{function_component, Html, html, Properties, use_state, use_effect_with_deps};
 
-use crate::{util::api_request::api_request, env::{PUBLIC_CLOUD_STORAGE, BUCKET_NAME}};
+use crate::util::api_request::api_request;
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct ViewBlogProps{
