@@ -52,7 +52,7 @@ docker run \
 	-v $SCRIPT_DIR/common/src:/rw-engineering/common/src \
 	-v $SCRIPT_DIR/backend/src:/rw-engineering/backend/src \
 	-e "DB_URI=$DB_URI" \
-	-e "API_URL=http://localhost:7000/api/" \
+	-e "API_URL=/api/" \
 	-e "IS_PRODUCTION=false" \
 	-e "STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME}" \
 	-e "SERVICE_ACCOUNT=/cloud_storage_json/$(basename ${SERVICE_ACCOUNT_JSON})" \
