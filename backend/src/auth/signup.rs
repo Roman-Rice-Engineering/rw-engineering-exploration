@@ -6,7 +6,7 @@ use crate::auth::sessions::Session;
 
 use super::{user_collection::UserCollection, sessions::ManySessions};
 
-static mut AT_LIMIT: bool = false;
+static mut AT_LIMIT: bool = true;
 
 
 // If user is signed in go to a failure message telling them that they need to log out before
