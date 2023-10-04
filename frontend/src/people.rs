@@ -58,7 +58,7 @@ fn OnePerson(OnePersonProps { person }: &OnePersonProps) -> Html{
         <div class="col">
             <div class="card shadow-sm">
                 <Link<PeopleRoute> to={PeopleRoute::Person { uuid: person.get_uuid().to_string() }} classes="image-zoom-hover-wrapper">
-                    <img class="card-img-top image-zoom-hover" src="https://loremflickr.com/640/640" focusable="false" />
+                    <img class="card-img-top image-zoom-hover" src="https://images.placeholders.dev/?width=720&height=480&text=?" focusable="false" />
                 </Link<PeopleRoute>>
                 <div class="card-body">
                     <p class="card-text">{person.get_first_name()}{" "}{person.get_last_name()}</p>
