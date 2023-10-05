@@ -17,6 +17,6 @@ docker run \
 	-e "SERVICE_ACCOUNT=/cloud_storage_json/$(basename ${SERVICE_ACCOUNT_JSON})" \
 	-v $(dirname $(realpath ${SERVICE_ACCOUNT_JSON})):/cloud_storage_json \
 	-e "DB_URI=$DB_URI" \
-	-p 7000:80 -it --rm --name rw-engineering rw-engineering
+	-p 80:80 -it --rm --name rw-engineering rw-engineering
 
 
