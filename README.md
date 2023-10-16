@@ -15,6 +15,7 @@ This project used the following tools:
 2. Docker
 3. Google Cloud
 4. MongoDB
+5. NGINX
 
 ## TODO
 - [x] Add sessions
